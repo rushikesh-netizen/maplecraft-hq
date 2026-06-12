@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Maplecraft × Aether Lab — Engagement Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --crimson:#B41D3E; --maroon:#901732; --yellow:#FEC917; --grey:#989898;
+    --ink:#232323; --soft:#6b6b6b; --line:#e8e2e0; --bg:#f7f5f4; --paper:#ffffff;
+    --green:#1e7a46; --green-bg:#e9f4ee; --amber-bg:#fdf4d6; --red-bg:#f9e7eb;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Montserrat',-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55}
+  a{color:var(--crimson);text-decoration:none}
+
+  /* ---------- top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:50;background:var(--paper);border-bottom:3px solid var(--crimson);padding:10px 28px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .wordmark{font-weight:800;font-size:17px;color:var(--crimson);letter-spacing:-.02em}
+  .wordmark span{display:block;font-weight:500;font-size:8.5px;letter-spacing:.42em;color:var(--grey);text-transform:uppercase}
+  .xsep{color:var(--grey);font-weight:600}
+  .agency{font-weight:700;font-size:13px;letter-spacing:.18em;color:var(--ink)}
+  .topnav{margin-left:auto;display:flex;gap:16px;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+  .topnav a{color:var(--soft)} .topnav a:hover{color:var(--crimson)}
+
+  /* ---------- hero ---------- */
+  .hero{background:var(--maroon);color:#fff;padding:36px 28px 30px}
+  .hero-in,.wrap{max-width:1180px;margin:0 auto}
+  .hero h1{font-size:27px;font-weight:800;letter-spacing:-.01em}
+  .hero h1 em{font-style:normal;color:var(--yellow)}
+  .hero .sub{color:#e8c7cf;font-size:13px;margin-top:6px;font-weight:500}
+  .hero-chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .chip{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600}
+  .chip b{color:var(--yellow)}
+  .agenda{background:rgba(0,0,0,.18);border-left:4px solid var(--yellow);border-radius:6px;margin-top:20px;padding:14px 18px}
+  .agenda h3{font-size:10.5px;text-transform:uppercase;letter-spacing:.2em;color:var(--yellow);margin-bottom:8px}
+  .agenda ol{margin-left:18px;font-size:13px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 26px}
+
+  /* ---------- sections ---------- */
+  section{padding:34px 28px 6px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:16px}
+  .sec-head h2{font-size:19px;font-weight:800;letter-spacing:-.01em}
+  .sec-head .k{font-size:11px;font-weight:700;color:var(--crimson);letter-spacing:.18em}
+  .sec-head .note{font-size:12px;color:var(--soft);margin-left:auto;text-align:right}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:20px;box-shadow:0 1px 2px rgba(35,35,35,.04)}
+
+  /* status pills */
+  .pill{display:inline-block;padding:3px 11px;border-radius:999px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+  .pill.green{background:var(--green-bg);color:var(--green)}
+  .pill.amber{background:var(--amber-bg);color:#8a6d00}
+  .pill.red{background:var(--red-bg);color:var(--crimson)}
+  .pill.greyp{background:#efecea;color:var(--soft)}
+
+  /* ---------- scopes ---------- */
+  .scope-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px}
+  .scope{border-top:4px solid var(--crimson)}
+  .scope h3{font-size:14.5px;font-weight:700;margin-bottom:2px}
+  .scope .win{font-size:11.5px;color:var(--grey);font-weight:600;margin-bottom:10px}
+  .scope .snote{font-size:12px;color:var(--soft);margin:8px 0 10px;min-height:34px}
+  .scope ul{list-style:none;font-size:12px}
+  .scope li{padding:3px 0 3px 18px;position:relative}
+  .scope li.done::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
+  .scope li.next::before{content:"→";position:absolute;left:0;color:var(--crimson);font-weight:800}
+  .scope .lbl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);margin-top:10px}
+
+  /* gantt */
+  .gantt{margin-top:16px}
+  .g-row{display:grid;grid-template-columns:230px repeat(12,1fr);align-items:center;gap:0;border-bottom:1px dashed var(--line);padding:7px 0}
+  .g-row.head{border-bottom:2px solid var(--line);font-size:10.5px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.04em}
+  .g-row.head div{text-align:center}
+  .g-name{font-size:12.5px;font-weight:600;padding-right:12px}
+  .g-bar{height:14px;border-radius:7px;grid-row:auto}
+  .g-bar.amber{background:linear-gradient(90deg,var(--crimson),var(--maroon))}
+  .g-bar.sched{background:#ddd6d3}
+  .g-now{position:relative}
+  .g-now::after{content:"";position:absolute;inset:0;background:var(--yellow);opacity:.16;border-radius:4px}
+  .g-legend{display:flex;gap:18px;font-size:11px;color:var(--soft);margin-top:10px;font-weight:600}
+  .g-legend i{display:inline-block;width:22px;height:9px;border-radius:5px;margin-right:6px;vertical-align:middle}
+
+  /* ---------- tables ---------- */
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--grey);font-weight:700;text-align:left;padding:8px 10px;border-bottom:2px solid var(--line)}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr.lean td{color:var(--soft);background:#fbfaf9}
+  .gates{display:flex;gap:4px;align-items:center}
+  .gate{width:9px;height:9px;border-radius:50%;background:#e4dedb}
+  .gate.on{background:var(--green)}
+  .gate.cur{background:var(--yellow);outline:2px solid #e6b400;outline-offset:1px}
+  .ptitle{font-weight:600}
+  .pref{color:var(--grey);font-weight:600;font-size:11px}
+  .stage-sum{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .ssum{flex:1;min-width:130px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 16px;text-align:center}
+  .ssum b{display:block;font-size:21px;font-weight:800;color:var(--crimson)}
+  .ssum.gdone b{color:var(--green)}
+  .ssum span{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--grey);font-weight:700}
+
+  /* ---------- kpi ---------- */
+  .kpi-flex{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+  @media(max-width:880px){.kpi-flex{grid-template-columns:1fr}}
+  .bar-row{display:grid;grid-template-columns:215px 1fr 110px;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .bar-row:last-of-type{border-bottom:none}
+  .bar-t{font-size:12px;font-weight:600}
+  .bar-track{background:#f0ebe9;border-radius:6px;height:18px;position:relative}
+  .bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--crimson),var(--maroon));min-width:2%}
+  .bar-v{font-size:12px;font-weight:700;color:var(--maroon)}
+  .bar-v small{color:var(--grey);font-weight:600}
+  .kpi-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .kc{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--yellow);border-radius:8px;padding:13px 15px}
+  .kc .k1{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--grey);font-weight:700}
+  .kc .k2{font-size:16px;font-weight:800;margin-top:3px}
+  .kc .k2 em{font-style:normal;color:var(--crimson)}
+  .kc .k3{font-size:11px;color:var(--soft);margin-top:2px}
+
+  /* ---------- workflow ---------- */
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px}
+  .step{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px;position:relative}
+  .step.you{border:2px solid var(--yellow);background:#fffdf3}
+  .step .n{width:24px;height:24px;border-radius:50%;background:var(--crimson);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+  .step h4{font-size:12.5px;font-weight:700;margin-bottom:4px}
+  .step p{font-size:11px;color:var(--soft)}
+  .youtag{position:absolute;top:10px;right:10px;background:var(--yellow);color:var(--ink);font-size:9px;font-weight:800;letter-spacing:.1em;padding:2px 8px;border-radius:999px}
+  .flow-note{margin-top:12px;font-size:12.5px;background:var(--amber-bg);border-left:4px solid var(--yellow);padding:10px 14px;border-radius:6px;font-weight:600}
+
+  /* ---------- two-col bottom ---------- */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:880px){.two{grid-template-columns:1fr}}
+  .week li{list-style:none;padding:8px 0 8px 24px;position:relative;border-bottom:1px dashed var(--line);font-size:12.5px}
+  .week li:last-child{border-bottom:none}
+  .week li::before{content:"";position:absolute;left:4px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--crimson)}
+  .week li b{color:var(--maroon)}
+
+  footer{padding:26px 28px 40px;text-align:center;color:var(--grey);font-size:11px}
+  footer b{color:var(--crimson)}
+
+  /* ---------- view switcher ---------- */
+  .vswitch{display:flex;gap:8px;margin-bottom:14px}
+  .vbtn{font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:7px 16px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--soft);cursor:pointer}
+  .vbtn.active{background:var(--maroon);color:#fff;border-color:var(--maroon)}
+  .vbtn:hover:not(.active){border-color:var(--crimson);color:var(--crimson)}
+
+  /* ---------- kanban ---------- */
+  .kanban{display:flex;gap:10px;align-items:flex-start;overflow-x:auto;padding-bottom:6px}
+  .kcol{flex:1 0 172px;background:#efebe9;border-radius:10px;padding:10px;min-height:90px}
+  .kcol h4{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--soft);display:flex;justify-content:space-between}
+  .kcol h4 span{background:var(--paper);border-radius:999px;padding:0 8px;color:var(--maroon)}
+  .kcard{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:8px;box-shadow:0 1px 2px rgba(35,35,35,.05)}
+  .kcard.leanc{opacity:.7;border-style:dashed}
+  .kcard .kt{font-size:12px;font-weight:600;line-height:1.35}
+  .kcard .km{font-size:10.5px;color:var(--grey);font-weight:600;margin-top:5px}
+  .kcard .km2{display:flex;justify-content:space-between;align-items:center;margin-top:7px}
+  .ktag{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--red-bg);color:var(--maroon);border-radius:4px;padding:2px 7px}
+
+  /* ---------- calendar ---------- */
+  .cal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px}
+  .cal{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .cal h4{font-size:12.5px;font-weight:800;color:var(--maroon);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em}
+  .cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .dow{font-size:9px;font-weight:700;color:var(--grey);text-transform:uppercase;text-align:center;padding-bottom:3px}
+  .day{min-height:42px;border:1px solid #f0ebe9;border-radius:5px;padding:2px 3px;font-size:10px}
+  .day.off{border:none;background:none}
+  .day .dn{color:var(--grey);font-weight:600;font-size:9px}
+  .day.today{outline:2px solid var(--yellow);outline-offset:-1px}
+  .evt{display:block;background:var(--crimson);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .evt.qv{cursor:pointer}
+  .evt.qv:hover{background:var(--maroon)}
+
+  /* ---------- quick view modal ---------- */
+  .modal-ov{position:fixed;inset:0;background:rgba(35,35,35,.55);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:42px 16px;overflow:auto}
+  .modal-ov.open{display:flex}
+  .modal{background:var(--paper);max-width:680px;width:100%;border-radius:12px;border-top:5px solid var(--crimson);padding:26px 28px;box-shadow:0 18px 50px rgba(0,0,0,.25)}
+  .modal h3{font-size:17px;font-weight:800;padding-right:36px}
+  .modal .qmeta{font-size:11.5px;color:var(--grey);font-weight:600;margin:5px 0 14px}
+  .modal .cap{white-space:pre-wrap;font-size:13px;line-height:1.65;border-left:3px solid var(--yellow);padding:4px 0 4px 16px}
+  .modal .qnote{margin-top:14px;font-size:11.5px;color:var(--soft);background:var(--amber-bg);border-radius:6px;padding:9px 12px;font-weight:600}
+  .mclose{float:right;font-family:inherit;font-size:18px;font-weight:700;border:none;background:#f0ebe9;color:var(--soft);width:32px;height:32px;border-radius:50%;cursor:pointer}
+  .mclose:hover{background:var(--crimson);color:#fff}
+  .viewbtn{font-family:inherit;background:none;border:1px solid var(--crimson);color:var(--crimson);border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 10px;cursor:pointer;vertical-align:1px}
+  .viewbtn:hover{background:var(--crimson);color:#fff}
+
+  /* ---------- editable decision log ---------- */
+  .dectools{display:flex;gap:8px;justify-content:flex-end;margin-bottom:10px}
+  .toolbtn{font-family:inherit;font-size:11px;font-weight:700;padding:6px 14px;border-radius:999px;border:1px solid var(--crimson);background:var(--crimson);color:#fff;cursor:pointer}
+  .toolbtn.ghost{background:none;color:var(--soft);border-color:var(--line)}
+  .toolbtn.ghost:hover{color:var(--crimson);border-color:var(--crimson)}
+  .ed[contenteditable]{outline:none;border-bottom:1px dashed transparent;cursor:text}
+  .ed[contenteditable]:hover{border-bottom-color:var(--grey)}
+  .ed[contenteditable]:focus{border-bottom-color:var(--crimson);background:#fffdf3}
+  .pill.clickable{cursor:pointer}
+  .pill.clickable:hover{filter:brightness(.93)}
+  .delbtn{font-family:inherit;border:none;background:none;color:var(--grey);font-size:15px;font-weight:700;cursor:pointer;line-height:1;padding:2px 6px}
+  .delbtn:hover{color:var(--crimson)}
+  .dechint{font-size:11px;color:var(--grey);margin-top:10px;font-weight:500}
+
+  @media print{
+    .topbar{position:static}.topnav{display:none}
+    body{background:#fff}section{padding:18px 10px 0}
+    .card{box-shadow:none}
+  }
+</style>
+<style id="light2026">
+  /* ============ 2026 LIGHT THEME — clean, bento, soft depth ============ */
+  :root{
+    --bg:#f7f5f2; --paper:#ffffff; --ink:#1c1b1a; --soft:#6e6a66; --line:#ece7e2; --grey:#9a948e;
+    --green:#169a52; --green-bg:#e7f6ed; --amber-bg:#fdf2d8; --red-bg:#fbe9ed;
+    --shadow-sm:0 1px 2px rgba(28,27,26,.05);
+    --shadow-md:0 1px 2px rgba(28,27,26,.04),0 12px 32px -12px rgba(28,27,26,.10);
+    --shadow-lg:0 2px 4px rgba(28,27,26,.05),0 24px 60px -20px rgba(28,27,26,.18);
+  }
+  body{background:
+    radial-gradient(900px 480px at 88% -120px, rgba(180,29,62,.05) 0%, transparent 55%),
+    radial-gradient(800px 460px at -6% 28%, rgba(254,201,23,.06) 0%, transparent 55%),
+    var(--bg)}
+  ::selection{background:var(--crimson);color:#fff}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#ddd6cf;border-radius:5px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--crimson)}
+
+  .topbar{background:rgba(255,255,255,.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(28,27,26,.07);box-shadow:none;padding:12px 28px}
+  .topnav a{color:var(--soft)} .topnav a:hover{color:var(--crimson)}
+
+  .hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#ffffff 0%,#faf7f4 100%);color:var(--ink);border-bottom:1px solid var(--line);padding:48px 28px 38px}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:.9}
+  .hero-in{position:relative;z-index:2}
+  .hero h1{font-size:31px;letter-spacing:-.025em}
+  .hero h1 em{background:linear-gradient(90deg,var(--crimson),#e0224e);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .sub{color:var(--soft)}
+  .chip{background:rgba(255,255,255,.88);border:1px solid var(--line);color:var(--ink);box-shadow:var(--shadow-sm);backdrop-filter:blur(6px)}
+  .chip b{color:var(--crimson)}
+  .chip:hover{border-color:#d8b2bc;box-shadow:var(--shadow-md)}
+  .chip.electric{background:var(--crimson);border-color:var(--crimson);color:#fff}
+  .chip.electric b{color:var(--yellow)}
+  .agenda{background:#fff;border:1px solid var(--line);border-left:4px solid var(--yellow);box-shadow:var(--shadow-sm)}
+  .agenda h3{color:#946300}
+  .agenda ol{color:var(--ink)}
+
+  section{padding:40px 28px 8px}
+  .sec-head h2{font-size:21px;letter-spacing:-.02em;position:relative;display:inline-block;padding-bottom:6px}
+  .sec-head h2::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:44px;background:linear-gradient(90deg,var(--crimson),var(--yellow));border-radius:2px}
+  .sec-head .k{color:var(--crimson)}
+  .card{border-radius:18px;box-shadow:var(--shadow-md);transition:box-shadow .25s ease,transform .25s ease,border-color .25s ease}
+  .card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);border-color:#e3d6d2}
+
+  .pill.green{background:var(--green-bg);color:#11713d}
+  .pill.amber{background:var(--amber-bg);color:#946300}
+  .pill.red{background:var(--red-bg);color:#a91f3e}
+  .pill.greyp{background:#f1eeea;color:var(--soft)}
+
+  .g-row,.g-row.head{border-color:var(--line)}
+  .g-bar{transform-origin:left;animation:growX 1.2s cubic-bezier(.16,1,.3,1) both;height:16px;border-radius:8px}
+  .g-bar.amber{background:linear-gradient(90deg,var(--crimson),var(--maroon));box-shadow:0 3px 10px -2px rgba(180,29,62,.4)}
+  .g-bar.sched{background:#e7e1db}
+  .g-now::after{opacity:.14}
+
+  th{color:var(--grey);border-bottom-color:var(--line)}
+  td{border-bottom-color:#f1eeea}
+  tr.lean td{background:#faf8f6;color:var(--soft)}
+  .gate{background:#e7e1db}
+  .gate.on{background:var(--green)}
+  .gate.cur{background:#f5b800;outline-color:#e0a800;animation:pulseSoft 2s infinite}
+  .ssum{border-radius:14px;box-shadow:var(--shadow-sm)}
+  .ssum b{color:var(--crimson)} .ssum.gdone b{color:var(--green)}
+
+  .bar-row{border-color:#f1eeea}
+  .bar-track{background:#f1edea}
+  .bar-fill{background:linear-gradient(90deg,var(--maroon),var(--crimson));width:0;transition:width 1.4s cubic-bezier(.16,1,.3,1) .25s}
+  .rv-in .bar-fill,.no-rv .bar-fill{width:var(--w)}
+  .bar-v{color:var(--maroon)}
+  .kc{border-radius:14px;background:#fff;box-shadow:var(--shadow-sm)}
+  .kc .k2 em{color:var(--crimson)}
+
+  .step{border-radius:16px;box-shadow:var(--shadow-sm)}
+  .step.you{background:#fffaf0;border:1.5px solid #f2c84b;box-shadow:0 8px 24px -10px rgba(242,200,75,.5)}
+  .step p{color:var(--soft)}
+  .flow-note{background:var(--amber-bg);border-left-color:var(--yellow);color:var(--ink)}
+
+  .week li{border-color:#f1eeea}
+  .week li::before{background:var(--crimson)}
+  .week li b{color:var(--crimson)}
+
+  .vbtn{border-radius:999px}
+  .vbtn.active{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:var(--shadow-sm)}
+  .kcol{background:#f3f0ec;border-radius:14px}
+  .kcol h4 span{background:#fff;color:var(--crimson)}
+  .kcard{border-radius:12px;box-shadow:var(--shadow-sm)}
+  .ktag{background:var(--red-bg);color:#a91f3e}
+  .cal{border-radius:16px}
+  .cal h4{color:var(--ink)}
+  .day{border-color:#f1eeea;border-radius:6px}
+  .day.today{outline:2px solid var(--crimson)}
+  .evt{background:var(--crimson)}
+  .evt.qv:hover{background:var(--maroon)}
+
+  .modal{border-radius:20px;border-top:none;box-shadow:var(--shadow-lg);padding:30px 32px}
+  .modal .cap{border-left-color:var(--yellow)}
+  .modal .qnote{background:var(--amber-bg);color:#7a5a00}
+  .mclose{background:#f1eeea;color:var(--soft)}
+  .viewbtn{border-color:#dcb7c0;color:var(--crimson)}
+  .viewbtn:hover{background:var(--crimson);border-color:var(--crimson);color:#fff}
+  .toolbtn{box-shadow:0 6px 16px -6px rgba(180,29,62,.5)}
+  .toolbtn.ghost{box-shadow:none}
+  .ed[contenteditable]:focus{background:#fff8e6}
+  .dechint code{color:#946300}
+
+  /* reveal-on-scroll */
+  .rv{opacity:0}
+  .rv-in{opacity:1;animation:riseIn .7s cubic-bezier(.16,1,.3,1) both;transition:transform .2s ease,box-shadow .25s ease,border-color .25s ease}
+
+  @keyframes pulseSoft{0%,100%{box-shadow:0 0 0 0 rgba(245,184,0,.45)}55%{box-shadow:0 0 0 6px rgba(245,184,0,0)}}
+  @keyframes growX{from{transform:scaleX(0)}}
+  @keyframes riseIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+  @media print{
+    #heroCanvas{display:none}
+    .rv{opacity:1}
+  }
+</style>
+<style id="infoviz">
+  /* ============ INFO-VIZ LAYER — graphical data presentation ============ */
+
+  /* engagement progress bar (hero) */
+  .eng-progress{margin-top:20px;max-width:660px}
+  .ep-top{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+  .ep-top b{color:var(--crimson)}
+  .ep-track{height:10px;border-radius:999px;background:#ece7e2;overflow:hidden}
+  .ep-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#901732,#b41d3e,#fec917);box-shadow:0 2px 8px rgba(180,29,62,.35);width:var(--p);animation:growW 1.4s cubic-bezier(.16,1,.3,1) .4s both}
+  @keyframes growW{from{width:0}}
+
+  /* scope progress rings (work vs time) */
+  .ring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:14px;margin-bottom:16px}
+  .ringcard{display:flex;gap:14px;align-items:center;padding:16px}
+  .ringcard svg{flex:0 0 auto}
+  .ring-meta h3{font-size:13px;font-weight:700;line-height:1.35}
+  .ring-meta .rnote{font-size:11px;color:var(--soft);margin:6px 0;line-height:1.5}
+  .ring-meta .rnext{font-size:11px;font-weight:700;color:#ffd84d}
+  .ring-pct{font-size:21px;font-weight:800;fill:#1c1b1a;font-family:'Montserrat',sans-serif}
+  .ring-sub{font-size:8px;font-weight:700;fill:#9a948e;letter-spacing:.08em;font-family:'Montserrat',sans-serif}
+
+  /* gantt today line */
+  .g-wrap{position:relative}
+  .todayline{position:absolute;top:30px;bottom:2px;left:calc(230px + (100% - 230px)*0.1167);width:2px;background:var(--crimson);box-shadow:0 0 8px rgba(180,29,62,.4);border-radius:2px}
+  .todayline::before{content:"TODAY";position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:800;letter-spacing:.12em;color:var(--crimson)}
+
+  /* stage summary becomes a funnel */
+  .stage-sum{gap:18px}
+  .stage-sum .ssum{position:relative}
+  .stage-sum .ssum:not(:last-child)::after{content:"➜";position:absolute;right:-16px;top:50%;transform:translateY(-50%);color:#c9c0b8;font-size:14px;z-index:2}
+
+  /* 15-post journey strip */
+  .journey-card{margin-bottom:14px;padding:16px 20px 12px}
+  .vizh{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:var(--grey);margin-bottom:10px}
+  #journey svg{width:100%;height:auto;display:block}
+  .j-legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:10.5px;font-weight:600;color:var(--soft);margin-top:6px}
+  .j-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+
+  /* projection + donut */
+  #projWrap svg{width:100%;height:auto;display:block}
+  .donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding-top:6px}
+  #donutLegend{font-size:11.5px;font-weight:600;color:var(--soft);display:grid;gap:6px}
+  #donutLegend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
+  #donutLegend b{color:var(--ink)}
+
+  /* workflow: weekly cycle with day badges + arrows */
+  .flow .step{padding-bottom:34px}
+  .dband{position:absolute;bottom:10px;left:14px;font-size:8.5px;font-weight:800;letter-spacing:.1em;color:#946300;background:#fdf2d8;border:1px solid rgba(148,99,0,.25);padding:2px 8px;border-radius:999px}
+  @media(min-width:701px){
+    .flow{gap:22px}
+    .flow .step:not(:last-child)::before{content:"➜";position:absolute;right:-19px;top:50%;transform:translateY(-50%);color:#c9c0b8;font-size:14px}
+  }
+</style>
+<style id="glass">
+  /* ============ LIQUID GLASS LAYER — Apple-inspired translucency ============ */
+  body{background:#f4f1ee}
+  body::before,body::after{content:"";position:fixed;z-index:-1;border-radius:50%;pointer-events:none}
+  body::before{width:58vw;height:58vw;left:-14vw;top:-20vw;background:radial-gradient(closest-side,rgba(254,201,23,.40),transparent 70%);filter:blur(60px);animation:blobA 30s ease-in-out infinite alternate}
+  body::after{width:52vw;height:52vw;right:-16vw;top:22vh;background:radial-gradient(closest-side,rgba(180,29,62,.25),transparent 70%);filter:blur(70px);animation:blobB 36s ease-in-out infinite alternate}
+  @keyframes blobA{to{transform:translate(8vw,7vh) scale(1.12)}}
+  @keyframes blobB{to{transform:translate(-7vw,11vh) scale(.92)}}
+
+  .topbar{background:rgba(255,255,255,.55);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border-bottom:1px solid rgba(255,255,255,.65);box-shadow:0 1px 0 rgba(28,27,26,.05)}
+
+  .card,.ssum,.kc,.step,.kcard,.cal{
+    background:rgba(255,255,255,.58);
+    backdrop-filter:blur(28px) saturate(165%);
+    -webkit-backdrop-filter:blur(28px) saturate(165%);
+    border:1px solid rgba(255,255,255,.72);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 14px 38px -16px rgba(70,30,42,.22);
+  }
+  .card{border-radius:24px}
+  .ssum,.kc,.step,.kcard{border-radius:18px}
+  .kcol{background:rgba(255,255,255,.32);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.5);border-radius:20px}
+  .card:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 22px 52px -18px rgba(70,30,42,.30);border-color:rgba(255,255,255,.92)}
+
+  /* hero */
+  .hero{background:transparent;border-bottom:none;padding:58px 28px 28px}
+  .hero h1{font-size:38px;font-weight:800;letter-spacing:-.035em}
+  .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--grey);margin-bottom:12px}
+  .island{display:inline-flex;align-items:center;gap:10px;background:rgba(22,20,22,.9);backdrop-filter:blur(14px);color:#fff;border-radius:999px;padding:10px 20px;font-size:12px;font-weight:600;box-shadow:0 14px 34px -12px rgba(22,20,22,.55);margin-bottom:24px}
+  .island b{color:var(--yellow);font-variant-numeric:tabular-nums;font-weight:700}
+  .island .isep{opacity:.3;margin:0 4px}
+  .idot{width:8px;height:8px;border-radius:50%;background:#ff453a;animation:idot 1.6s ease-in-out infinite}
+  @keyframes idot{0%,100%{opacity:1}50%{opacity:.3}}
+  .widgets{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:14px;margin:26px 0 20px}
+  .widget{background:rgba(255,255,255,.55);backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%);border:1px solid rgba(255,255,255,.72);border-radius:22px;padding:16px 18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 12px 32px -14px rgba(70,30,42,.2)}
+  .w-k{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--grey)}
+  .w-n{font-size:31px;font-weight:800;letter-spacing:-.03em;color:var(--ink);margin-top:5px;font-variant-numeric:tabular-nums;line-height:1.05}
+  .w-n span{font-size:14px;color:var(--grey);font-weight:700}
+  .w-c{font-size:10.5px;color:var(--soft);font-weight:600;margin-top:5px}
+  .w-bar{height:6px;border-radius:99px;background:rgba(28,27,26,.08);margin-top:10px;overflow:hidden}
+  .w-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--crimson),var(--yellow));width:var(--p);animation:growW 1.4s cubic-bezier(.16,1,.3,1) .4s both}
+  .widget.accent{background:linear-gradient(135deg,rgba(180,29,62,.93),rgba(126,17,42,.93));border-color:rgba(255,255,255,.3)}
+  .widget.accent .w-k{color:rgba(255,255,255,.75)}
+  .widget.accent .w-n{color:#fff}
+  .widget.accent .w-c{color:rgba(255,255,255,.8)}
+  .agenda{background:rgba(255,255,255,.5);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid rgba(255,255,255,.7);border-left:1px solid rgba(255,255,255,.7);border-radius:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 28px -14px rgba(70,30,42,.18)}
+  .agenda h3{color:var(--crimson)}
+
+  /* segmented control */
+  .vswitch{display:inline-flex;gap:2px;background:rgba(255,255,255,.45);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.7);border-radius:999px;padding:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 18px -10px rgba(70,30,42,.2)}
+  .vbtn{border:none;background:transparent;color:var(--soft);padding:7px 18px}
+  .vbtn.active{background:#fff;color:var(--ink);box-shadow:0 2px 10px rgba(28,27,26,.14)}
+  .vbtn:hover:not(.active){color:var(--ink);border:none}
+
+  /* scope panels v2 */
+  .ringcard{display:block;padding:20px 22px}
+  .rc-head{display:flex;align-items:flex-start;gap:10px;justify-content:space-between;margin-bottom:14px}
+  .rc-name{font-size:14px;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+  .rc-win{display:block;font-size:10.5px;color:var(--grey);font-weight:600;margin-top:3px}
+  .rc-body{display:flex;align-items:center;gap:18px}
+  .rc-big{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--ink)}
+  .rc-big small{font-size:16px;color:var(--grey);font-weight:700}
+  .rc-cap{font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--grey);font-weight:700;margin-top:3px}
+  .rc-delta{font-size:11px;font-weight:700;margin-top:9px;padding:4px 11px;border-radius:999px;display:inline-block}
+  .rc-delta.up{background:var(--green-bg);color:#11713d}
+  .rc-delta.down{background:var(--amber-bg);color:#946300}
+  .rc-delta.neutral{background:rgba(28,27,26,.06);color:var(--soft)}
+  .rc-foot{margin-top:15px;padding-top:13px;border-top:1px solid rgba(28,27,26,.08)}
+  .rc-note{font-size:11px;color:var(--soft);line-height:1.55}
+  .rc-next{font-size:11.5px;font-weight:700;color:var(--crimson);margin-top:7px}
+
+  .modal{background:rgba(255,255,255,.78);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.8)}
+  .modal-ov{background:rgba(40,30,34,.35);backdrop-filter:blur(8px)}
+
+  @media print{body::before,body::after{display:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wordmark">maplecraft<span>interiors</span></div>
+  <div class="xsep">×</div>
+  <div class="agency">AETHER&nbsp;LAB</div>
+  <nav class="topnav">
+    <a href="#scopes">Scopes</a><a href="#pipeline">Pipeline</a><a href="#decisions">Decisions</a>
+    <a href="#kpi">KPIs</a><a href="#workflow">Workflow</a><a href="#week">This Week</a>
+  </nav>
+</div>
+
+<div class="hero">
+  <div class="hero-in">
+    <div class="island"><span class="idot"></span>Next batch review · Fri Jun 19, 11:30<span class="isep">│</span>P1 live in&nbsp;<b id="cdown">—</b></div>
+    <div class="eyebrow">Shravan C. Mudaliar · OFFISTORY · MapleCraft Interiors</div>
+    <h1>Engagement <em>Command Center</em></h1>
+    <div class="sub">May 2026 → April 2027 · Updated Fri, 12 Jun 2026 · Prepared by Aether Lab</div>
+    <div class="widgets">
+      <div class="widget"><div class="w-k">Engagement</div><div class="w-n">Wk 5<span> / 52</span></div><div class="w-bar"><i style="--p:10%"></i></div><div class="w-c">10% elapsed · 2 scopes live, 2 queued</div></div>
+      <div class="widget"><div class="w-k">Content ready</div><div class="w-n">15<span> / 15</span></div><div class="w-c">posts copy-final · P1 in design</div></div>
+      <div class="widget"><div class="w-k">Open decisions</div><div class="w-n" id="decCount">5</div><div class="w-c">each with an owner &amp; a date ↓</div></div>
+      <div class="widget accent"><div class="w-k">Go-live</div><div class="w-n">Mon 15</div><div class="w-c">June · 9:00 IST · then weekly</div></div>
+    </div>
+    <div class="agenda">
+      <h3>Review #1 outcomes · Fri 12 Jun</h3>
+      <ol>
+        <li>Voice locked: simple, informal, honest — written to clients, never "genius" talk</li>
+        <li>Posts reach you Wednesdays · async feedback by Friday · short conclusive calls</li>
+        <li>Site imagery: realistic, helmet + safety jacket — never suits on site</li>
+        <li>Logo: fresh direction (infinity retired) · business cards in scope · your references invited</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SCOPES ================= -->
+<section id="scopes">
+  <div class="wrap">
+    <div class="sec-head"><span class="k">01</span><h2>Scope Tracker</h2><span class="note">Per signed engagement plan Q/25-26/28/04 · sequenced so foundations precede content</span></div>
+    <div class="ring-grid" id="scopeCards"></div>
+    <div class="card gantt">
+      <div class="g-wrap">
+        <div id="ganttRows"></div>
+        <div class="todayline" aria-hidden="true"></div>
+      </div>
+      <div class="g-legend">
+        <span><i style="background:linear-gradient(90deg,var(--crimson),var(--maroon))"></i>Live</span>
+        <span><i style="background:#ddd6d3"></i>Scheduled</span>
+        <span><i style="background:var(--yellow);opacity:.5"></i>Current month</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PIPELINE ================= -->
+<section id="pipeline">
+  <div class="wrap">
+    <div class="sec-head"><span class="k">02</span><h2>Content Pipeline — 15-Week Priority Run</h2><span class="note">Your shortlist (W-refs) · Mondays 9:00–10:30 IST · carousels publish as native PDF documents</span></div>
+    <div class="stage-sum">
+      <div class="ssum gdone"><b>15/15</b><span>Copy final</span></div>
+      <div class="ssum"><b>1</b><span>In design</span></div>
+      <div class="ssum"><b>0</b><span>Client review</span></div>
+      <div class="ssum"><b>0</b><span>Scheduled</span></div>
+      <div class="ssum"><b>0</b><span>Live</span></div>
+    </div>
+    <div class="card journey-card">
+      <div class="vizh">The 15-week run — every Monday, Jun 15 → Sep 21 · click a glowing node to preview</div>
+      <div id="journey"></div>
+      <div class="j-legend" id="jLegend"></div>
+    </div>
+    <div class="vswitch">
+      <button class="vbtn active" data-v="viewTable">Table</button>
+      <button class="vbtn" data-v="viewKanban">Kanban</button>
+      <button class="vbtn" data-v="viewCal">Calendar</button>
+    </div>
+    <div class="card" id="viewTable">
+      <table>
+        <thead><tr><th>#</th><th>Date</th><th>Pillar</th><th>Post</th><th>Format</th><th>Gates</th><th>Stage</th></tr></thead>
+        <tbody id="pipeRows"></tbody>
+      </table>
+    </div>
+    <div class="kanban" id="viewKanban" style="display:none"></div>
+    <div class="cal-grid" id="viewCal" style="display:none"></div>
+  </div>
+</section>
+
+<!-- ================= DECISIONS ================= -->
+<section id="decisions">
+  <div class="wrap">
+    <div class="sec-head"><span class="k">03</span><h2>Decision Log</h2><span class="note">Open decisions are open risks — every item has an owner and a date</span></div>
+    <div class="card">
+      <div class="dectools">
+        <button id="decAdd" class="toolbtn">+ Add line item</button>
+        <button id="decReset" class="toolbtn ghost">Reset to defaults</button>
+      </div>
+      <table>
+        <thead><tr><th>ID</th><th>Decision</th><th>Owner</th><th>Due</th><th>Status</th><th>Why it matters</th><th></th></tr></thead>
+        <tbody id="decRows"></tbody>
+      </table>
+      <div class="dechint">Click any cell to edit in place · click a status pill to toggle Open / Resolved · × deletes a line. Edits save to this browser; update the <code>DATA</code> block in the file to make them permanent.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KPI ================= -->
+<section id="kpi">
+  <div class="wrap">
+    <div class="sec-head"><span class="k">04</span><h2>Performance Baseline &amp; Targets</h2><span class="note">Baseline: your 5 self-published posts, Apr 1 – May 30</span></div>
+    <div class="kpi-flex">
+      <div class="card">
+        <div class="vizh">The trajectory — average impressions per post</div>
+        <div id="projWrap"></div>
+        <div style="margin-top:8px;font-size:11.5px;color:var(--soft);font-weight:600">From a 901 baseline to 5,000+ by the capstone — carried by carousels, save-magnets and the first-hour protocol.</div>
+      </div>
+      <div class="card">
+        <div class="vizh">What the 15 posts talk about</div>
+        <div class="donut-wrap">
+          <svg id="pillarDonut" width="150" height="150" viewBox="0 0 150 150"></svg>
+          <div id="donutLegend"></div>
+        </div>
+      </div>
+    </div>
+    <div class="kpi-flex" style="margin-top:14px">
+      <div class="card">
+        <div class="vizh">Baseline — your 5 self-published posts (Apr 1 – May 30)</div>
+        <div id="kpiBars"></div>
+        <div style="margin-top:12px;font-size:11.5px;color:var(--soft);font-weight:600">
+          Average <b style="color:#ffd84d">901 impressions / post</b> · best performer: the checklist infographic — validating the carousel-led pipeline above.
+        </div>
+      </div>
+      <div class="kpi-cards">
+        <div class="kc"><div class="k1">Impressions / post</div><div class="k2">901 → <em>5,000+</em></div><div class="k3">2,500 avg by P5 · 5,000+ by P15</div></div>
+        <div class="kc"><div class="k1">Saves (carousels)</div><div class="k2"><em>25+</em> / carousel</div><div class="k3">Primary KPI from P2 — the “bookmark test”</div></div>
+        <div class="kc"><div class="k1">Profile views</div><div class="k2"><em>3×</em> in 90 days</div><div class="k3">Baseline captured at profile freeze</div></div>
+        <div class="kc"><div class="k1">Inbound conversations</div><div class="k2"><em>2+</em> / month</div><div class="k3">Keyword DMs + site-inspection offers, from Aug</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WORKFLOW ================= -->
+<section id="workflow">
+  <div class="wrap">
+    <div class="sec-head"><span class="k">05</span><h2>The Publishing Engine</h2><span class="note">Runs weekly, every week, without chasing — governance built in</span></div>
+    <div class="flow" id="flowSteps"></div>
+    <div class="flow-note">Your involvement is deliberately minimal: <b>one 48-hour approval window</b> per post, and <b>15 minutes of first-hour engagement</b> on Monday mornings. Everything else runs on the system.</div>
+  </div>
+</section>
+
+<!-- ================= WEEK + ASSETS ================= -->
+<section id="week">
+  <div class="wrap">
+    <div class="sec-head"><span class="k">06</span><h2>This Week &amp; Inputs Needed</h2><span class="note">Weekly review — standing slot: Fridays 11:30</span></div>
+    <div class="two">
+      <div class="card">
+        <h3 style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--maroon)">Week of Jun 12 – 19</h3>
+        <ul class="week" id="weekRows"></ul>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--maroon)">Inputs from Shravan</h3>
+        <table>
+          <thead><tr><th>Item</th><th>Needed for</th><th>Due</th><th>Status</th></tr></thead>
+          <tbody id="assetRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Prepared by <b>Aether Lab</b> · Confidential — for Maplecraft Interiors LLP / OFFISTORY Projects Studio · rushikesh@aether-lab.com
+</footer>
+
+<div class="modal-ov" id="qvOv">
+  <div class="modal">
+    <button class="mclose" title="Close">×</button>
+    <h3 id="qvTitle"></h3>
+    <div class="qmeta" id="qvMeta"></div>
+    <div class="cap" id="qvCap"></div>
+    <div class="qnote" id="qvNote"></div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   WEEKLY UPDATE: edit DATA below, save, done. Nothing else to touch.
+   ===================================================================== */
+const DATA = {
+  monthNames:['May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr'],
+  currentMonth:1, /* 0-indexed: Jun 26 */
+
+  scopes:[
+    {id:'A', name:'Scope A — Shravan · Personal LinkedIn', win:'May 26 → Apr 27', start:0, len:12, status:'amber', statusLabel:'Live · Amber', work:14, time:10,
+     note:'Profile freeze pending — it anchors P1 on Jun 15. Copy for all 15 posts is finalised.',
+     done:['Profile copy v2 — headline, About, Featured, Skills, banner brief','15-post pipeline: copy finalised end-to-end','Revision 2 — all 5 of your comments incorporated','Jun 12: LinkedIn access received · figures verified (2.5M+ sq ft · 350+ projects)'],
+     next:['P1 rewritten to new voice — approve before Mon','P2–P4 in new voice → Wednesday batch (Jun 17)','Freeze profile (DL-01)']},
+    {id:'D', name:'Scope D — OFFISTORY · Brand Identity', win:'May 26 → Jun 26', start:0, len:2, status:'amber', statusLabel:'Live · Amber', work:55, time:70,
+     note:'Direction reset at Review #1 — infinity brief retired; fresh concepts requested, business cards included.',
+     done:['3 logo rounds explored (infinity/S/8) — retired by client','Brief sharpened: corporate, serious, trust'],
+     next:['Fresh logo + business card concepts — Wed Jun 17','Shravan shares references & font preferences','Freeze direction Fri Jun 19 (DL-02)']},
+    {id:'C', name:'Scope C — MapleCraft · Website', win:'Jul 26 → Aug 26', start:2, len:2, status:'sched', statusLabel:'Scheduled', work:0, time:0, startLbl:'JUL',
+     note:'Starts Jul Wk 1. The credibility anchor before MapleCraft social goes live.',
+     done:[],
+     next:['Pre-collect project photography + case-study data','Discovery & sitemap — Jul Wk 1']},
+    {id:'B', name:'Scope B — MapleCraft · LinkedIn + Instagram', win:'Sep 26 → Apr 27', start:4, len:8, status:'sched', statusLabel:'Scheduled', work:0, time:0, startLbl:'SEP',
+     note:'Begins after website launch so every post lands on a polished presence.',
+     done:[],
+     next:['IG + Company Page setup — Aug 26','4–5 posts / month from Sep 26']}
+  ],
+
+  /* gates: 1=Copy 2=Design 3=Review 4=Scheduled 5=Live · done = gates completed, cur = gate in progress (0 = none) */
+  pipeline:[
+    {p:'P1', ref:'W1',  date:'Jun 15', pillar:'Site Wisdom', title:'3 errors in 10 minutes',                 fmt:'Text + image',    done:1, cur:2, stage:'Revised · v3'},
+    {p:'P2', ref:'W2',  date:'Jun 22', pillar:'Governance',  title:'The Governance Gateway',                 fmt:'Carousel ×7',     done:1, cur:0, stage:'Copy final'},
+    {p:'P3', ref:'W5',  date:'Jun 29', pillar:'Checklists',  title:'25-Point Pre-Construction Checklist',    fmt:'Carousel ×9',     done:1, cur:0, stage:'Copy final'},
+    {p:'P4', ref:'W8',  date:'Jul 6',  pillar:'Leadership',  title:'25 years — the honest lessons',          fmt:'Text + photo',    done:1, cur:0, stage:'Copy final'},
+    {p:'P5', ref:'W9',  date:'Jul 13', pillar:'Cost',        title:'The hidden cost of delay',               fmt:'Carousel ×7',     done:1, cur:0, stage:'Copy final'},
+    {p:'P6', ref:'W10', date:'Jul 20', pillar:'Client Ed',   title:'10 questions before you appoint',        fmt:'Carousel ×12',    done:1, cur:0, stage:'Copy final'},
+    {p:'P7', ref:'W12', date:'Jul 27', pillar:'Site Wisdom', title:'Scope creep cost ₹40 lakhs',             fmt:'Text + image',    done:1, cur:0, stage:'Copy final'},
+    {p:'P8', ref:'W19', date:'Aug 3',  pillar:'Checklists',  title:'The handover pack you deserve',          fmt:'Carousel ×10',    done:1, cur:0, stage:'Copy final'},
+    {p:'P9', ref:'W20', date:'Aug 10', pillar:'Client Ed',   title:'Your ₹20-crore asset',                   fmt:'Text + graphic',  done:1, cur:0, stage:'Copy final'},
+    {p:'P10',ref:'W21', date:'Aug 17', pillar:'Cost',        title:'The mid-project turnaround',             fmt:'Long-form text',  done:1, cur:0, stage:'Copy final'},
+    {p:'P11',ref:'W22', date:'Aug 24', pillar:'Governance',  title:'The 5 Pillars',                          fmt:'Carousel ×7',     done:1, cur:0, stage:'Copy final'},
+    {p:'P12',ref:'W36', date:'Aug 31', pillar:'Cost',        title:'Governance ROI — the math',              fmt:'Carousel ×8',     done:1, cur:0, stage:'Copy final'},
+    {p:'P13',ref:'W41', date:'Sep 7',  pillar:'Site Wisdom', title:'Anatomy of a failed handover',           fmt:'Text + checklist',done:1, cur:0, stage:'Copy final'},
+    {p:'P14',ref:'W46', date:'Sep 14', pillar:'Trends',      title:'The office of 2030',                     fmt:'Text + visual',   done:1, cur:0, stage:'Copy final'},
+    {p:'P15',ref:'W49', date:'Sep 21', pillar:'Governance',  title:'Top 10 Governance Principles — capstone',fmt:'Carousel ×12',    done:1, cur:0, stage:'Copy final'}
+  ],
+  lean:[
+    {p:'L1', title:'The 8 wastes of corporate fit-out projects', fmt:'Carousel ×9', stage:'Proposed — awaiting shortlist (DL-03)'},
+    {p:'L2', title:'I build programmes with the people who execute', fmt:'Story + carousel ×6', stage:'Proposed — awaiting shortlist (DL-03)'},
+    {p:'L3', title:'In 30 minutes, 5S tells you how the project will end', fmt:'Carousel ×7', stage:'Proposed — awaiting shortlist (DL-03)'}
+  ],
+
+  quickViews:{
+    P1:{
+      title:'3 errors in 10 minutes',
+      meta:'Mon Jun 15, 9:00 IST · Site Wisdom · Text + image · Stage: In design',
+      caption:`Last year, a client asked me to walk through their new office site in Mumbai. Work had just started. They wanted a second pair of eyes.
+
+In the first ten minutes, I found three problems.
+
+I am not saying this to sound clever. After 25 years on construction sites, you learn where problems like to hide. Anyone with those years would have seen the same things.
+
+Problem 1 — Two teams were using the same space above the ceiling.
+The AC ducts and the fire sprinkler pipes were both drawn through the same area. Two consultants, two drawings — and nobody had put them on one sheet to check. Caught on site, this means three weeks of breaking and redoing work. Caught on paper, it is a two-hour meeting.
+
+Problem 2 — The ceiling height did not exist.
+The drawings promised a 2.9 metre clear ceiling. But the building's beam, plus all the pipes and ducts above, left only 2.65 metres. The partition team had already started marking walls against the wrong height.
+
+Problem 3 — A fire exit had quietly become narrower.
+A small layout change had reduced the width of an escape route. Every internal review had missed it. The fire department's inspection would not have missed it.
+
+Here is the honest part: the site team had done nothing wrong. All three problems were created months earlier — in drawings and approvals — when changes were made but never checked against each other.
+
+The site does not create problems. It only reveals them.
+
+That is why the paperwork needs as much attention as the brickwork. From day one. Not after the first crisis.
+
+If you have walked into something similar on your projects, I would genuinely like to hear it.
+
+#CorporateInteriors #ProjectGovernance #OfficeFitOut #ProjectManagement`,
+      note:'v3 — rewritten Jun 12 to the new voice guide: simple English, story-first, honest, no boasting. Creative: needs a site photo in helmet + safety jacket (Review #1 rule — current suit photo replaced). Reaches you Wednesday; feedback by Friday.'
+    }
+  },
+
+  decisions:[
+    {id:'DL-01', item:'LinkedIn profile — review Shravan’s self-updated profile, propose tweaks, then freeze', owner:'Aether', due:'Jun 16', status:'open',
+     why:'Reframed at Review #1 — he has updated it himself; we audit and align it to the brand strategy before P1'},
+    {id:'DL-02', item:'OFFISTORY logo — fresh direction (infinity brief retired) + business card designs', owner:'Aether + Shravan', due:'Jun 19', status:'open',
+     why:'Review #1: move away from infinity concepts; Shravan shares references & font preferences; cards needed for production'},
+    {id:'DL-03', item:'Lean posts L1 / L2 / L3 — shortlist for development', owner:'Shravan', due:'Jun 19', status:'open',
+     why:'L1 slots in after P5 (delay-cost post primes the waste conversation)'},
+    {id:'DL-04', item:'Space Matrix official designation (per employment record)', owner:'Shravan', due:'Jun 19', status:'open',
+     why:'LinkedIn job titles should match records — Experience section accuracy'},
+    {id:'DL-05', item:'Verified project figures — 350+ projects · 2.5M+ sq ft', owner:'Shravan', due:'—', status:'resolved',
+     why:'Resolved Jun 12 — client verified: 350+ projects, 2.5M+ sq ft delivered'},
+    {id:'DL-06', item:'Maplecraft exact brand hex values', owner:'Aether', due:'—', status:'resolved',
+     why:'Resolved Jun 12 from brand file: #B41D3E · #901732 · #FEC917 · #989898'},
+    {id:'DL-07', item:'LinkedIn account access for publishing', owner:'Shravan + Aether', due:'—', status:'resolved',
+     why:'Access received Jun 12 — rotate password after setup as standard account hygiene'},
+    {id:'DL-08', item:'Roll out verified figures (2.5M+ sq ft · 350+ projects) across profile copy and all 15 posts', owner:'Aether', due:'Jun 13', status:'open',
+     why:'Every claim must match everywhere before P1 publishes — consistency is the brand'},
+    {id:'DL-09', item:'Voice guide adopted — simple English, story-first, honest, no boasting; rework all queued posts', owner:'Aether', due:'Jun 17', status:'open',
+     why:'Review #1 feedback (Jun 12). P1 already rewritten (v3); P2–P4 follow before the Wednesday batch'},
+    {id:'DL-10', item:'Publishing cadence confirmed — creatives produced in batches of 4; posting once a week (Mondays)', owner:'Aether + Shravan', due:'—', status:'resolved',
+     why:'Resolved Jun 12 — “4 per week” in the notes referred to batch production for review, not publishing. Scope (4–5 posts/month) holds'}
+  ],
+
+  kpiPosts:[
+    {t:'“Close the false ceiling” checklist', v:1844, meta:'24 reactions · 1 comment'},
+    {t:'Measuring-tape execution lesson',     v:1141, meta:'21 reactions · 4 comments'},
+    {t:'Alignment workshop',                  v:671,  meta:'17 reactions · 5 comments'},
+    {t:'Design vs execution truth',           v:538,  meta:'13 reactions · 2 comments'},
+    {t:'Fast-track timeline problem',         v:310,  meta:'9 reactions · 3 comments'}
+  ],
+
+  flow:[
+    {n:1, t:'Topic Bank',    d:'Your 50 ideas + performance data feed the queue', you:false, day:'FRI'},
+    {n:2, t:'Copy',          d:'Drafted in your voice — simple, honest, story-first', you:false, day:'MON'},
+    {n:3, t:'Design',        d:'Maplecraft-palette templates, OffiStory-swappable', you:false, day:'TUE'},
+    {n:4, t:'Reaches you',   d:'Posts land with you every Wednesday — review at leisure', you:true, day:'WED'},
+    {n:5, t:'Feedback',      d:'Async via WhatsApp/email by Friday — calls stay short & conclusive', you:true, day:'FRI'},
+    {n:6, t:'Publish',       d:'Mondays 9:00 IST · 15-min first-hour engagement together', you:false, day:'MON 9AM'},
+    {n:7, t:'Measure',       d:'Impressions, saves, DMs — folded into the Friday review', you:false, day:'FRI'}
+  ],
+
+  week:[
+    '<b>Fri Jun 12</b> — Review #1 done ✓ · voice feedback received: professional, simple English, honest, story-first',
+    '<b>Sat Jun 13</b> — P1 revised to the new voice → your quick approval on WhatsApp · profile freeze (DL-01)',
+    '<b>Mon Jun 15, 9:00 IST</b> — P1 goes live (on approval) · 15-min first-hour together',
+    '<b>Wed Jun 17</b> — First Wednesday batch: P2–P4 in the new voice + refined OFFISTORY logo set',
+    '<b>Fri Jun 19, 11:30</b> — Batch review: 4 posts + logo direction (DL-02)'
+  ],
+
+  assets:[
+    {item:'Site photos — helmet + safety jacket, realistic conditions (no suits, per Review #1)', need:'P1 + ongoing', due:'Jun 13', status:'open'},
+    {item:'Logo & business-card references + font preferences', need:'Scope D fresh direction', due:'Jun 16', status:'open'},
+    {item:'Reflective portrait / professional photo', need:'P4 · Jul 6', due:'Jul 1', status:'open'},
+    {item:'Abbott BKC case study', need:'Authority asset · M2', due:'—', status:'received'},
+    {item:'PMO Playbook + achievements', need:'Article series · M3–6', due:'—', status:'received'},
+    {item:'Project list, sizes & locations', need:'Profile + posts', due:'—', status:'received'}
+  ]
+};
+
+/* ---------- render: scope cards ---------- */
+const pill = s => s==='resolved'||s==='received' ? '<span class="pill green">'+(s==='received'?'Received':'Resolved')+'</span>'
+            : s==='open' ? '<span class="pill amber">Open</span>'
+            : s==='amber' ? '<span class="pill amber">Live · Amber</span>'
+            : s==='green' ? '<span class="pill green">On track</span>'
+            : '<span class="pill greyp">Scheduled</span>';
+
+/* scope panels: glass tiles — activity ring (grey = time, colored = work) + schedule delta */
+const ringSVG = s => {
+  const R = 36, C = 2*Math.PI*R;
+  const live = s.work > 0 || s.time > 0;
+  const workCol = !live ? '#cfc8c3' : s.work >= s.time ? '#169a52' : '#e09a00';
+  return `<svg width="92" height="92" viewBox="0 0 92 92" aria-hidden="true">
+    <circle cx="46" cy="46" r="${R}" fill="none" stroke="rgba(28,27,26,.08)" stroke-width="9"/>
+    <circle cx="46" cy="46" r="${R}" fill="none" stroke="rgba(28,27,26,.20)" stroke-width="9" stroke-linecap="round"
+      stroke-dasharray="${C*s.time/100} ${C}" transform="rotate(-90 46 46)"/>
+    <circle cx="46" cy="46" r="${R}" fill="none" stroke="${workCol}" stroke-width="5.5" stroke-linecap="round"
+      stroke-dasharray="${Math.max(C*s.work/100,.01)} ${C}" transform="rotate(-90 46 46)"/>
+    <text x="46" y="54" text-anchor="middle" font-size="22" font-weight="800" fill="#1c1b1a" font-family="Montserrat,sans-serif">${s.id}</text>
+  </svg>`;
+};
+document.getElementById('scopeCards').innerHTML = DATA.scopes.map(s => {
+  const live = s.work > 0 || s.time > 0;
+  const stats = live
+    ? `<div class="rc-big">${s.work}<small>%</small></div><div class="rc-cap">work complete</div>
+       <div class="rc-delta ${s.work >= s.time ? 'up' : 'down'}">${s.work >= s.time ? '▲ ahead of' : '▼ behind'} schedule · ${s.time}% of time used</div>`
+    : `<div class="rc-big">${s.startLbl}</div><div class="rc-cap">starts</div>
+       <div class="rc-delta neutral">queued — foundations first</div>`;
+  return `<div class="card ringcard">
+    <div class="rc-head">
+      <div class="rc-name">${s.name.replace(/^Scope \w — /,'')}<span class="rc-win">Scope ${s.id} · ${s.win}</span></div>
+      ${s.status==='amber' ? '<span class="pill amber">'+s.statusLabel+'</span>' : '<span class="pill greyp">'+s.statusLabel+'</span>'}
+    </div>
+    <div class="rc-body">${ringSVG(s)}<div class="rc-stats">${stats}</div></div>
+    <div class="rc-foot"><div class="rc-note">${s.note}</div><div class="rc-next">→ ${s.next[0]}</div></div>
+  </div>`;
+}).join('');
+
+/* ---------- render: gantt ---------- */
+let g = '<div class="g-row head"><div class="g-name"></div>' + DATA.monthNames.map((m,i)=>`<div class="${i===DATA.currentMonth?'g-now':''}">${m}</div>`).join('') + '</div>';
+g += DATA.scopes.map(s=>{
+  let cells = '';
+  for(let i=0;i<12;i++){
+    if(i===s.start){ cells += `<div class="g-bar ${s.status==='sched'?'sched':'amber'}" style="grid-column:${i+2} / span ${s.len}"></div>`; i += s.len-1; }
+    else cells += '<div></div>';
+  }
+  return `<div class="g-row"><div class="g-name">${s.name.split('—')[0].trim()} <span style="color:var(--grey)">· ${s.name.split('·')[1]||''}</span></div>${cells}</div>`;
+}).join('');
+document.getElementById('ganttRows').innerHTML = g;
+
+/* ---------- render: pipeline ---------- */
+const gates = (done,cur) => '<div class="gates">'+[1,2,3,4,5].map(i=>`<span class="gate ${i<=done?'on':i===cur?'cur':''}"></span>`).join('')+'</div>';
+document.getElementById('pipeRows').innerHTML =
+  DATA.pipeline.map(r=>`<tr>
+    <td class="pref">${r.p}<br><span style="font-weight:500">${r.ref}</span></td>
+    <td style="white-space:nowrap;font-weight:600">${r.date}</td>
+    <td>${r.pillar}</td>
+    <td class="ptitle">${r.title}${DATA.quickViews[r.p] ? ' <button class="viewbtn" data-qv="'+r.p+'">View</button>' : ''}</td>
+    <td>${r.fmt}</td>
+    <td>${gates(r.done, r.cur)}</td>
+    <td>${r.cur>0?'<span class="pill amber">'+r.stage+'</span>':'<span class="pill green">'+r.stage+'</span>'}</td>
+  </tr>`).join('')
+  + DATA.lean.map(r=>`<tr class="lean">
+    <td class="pref">${r.p}</td><td>—</td><td>Lean</td>
+    <td class="ptitle">${r.title}</td><td>${r.fmt}</td>
+    <td>${gates(0,0)}</td><td><span class="pill greyp">${r.stage}</span></td>
+  </tr>`).join('');
+
+/* ---------- render: decisions (editable, persisted to localStorage) ---------- */
+const DKEY = 'mc003-decisions-v4'; /* bumped — DL-10 resolved: batch production, weekly publishing */
+let decs = null;
+try { decs = JSON.parse(localStorage.getItem(DKEY)); } catch(e) {}
+if (!Array.isArray(decs) || !decs.length) decs = DATA.decisions.map(d => ({...d}));
+const saveDecs = () => localStorage.setItem(DKEY, JSON.stringify(decs));
+
+function renderDecs(){
+  document.getElementById('decRows').innerHTML = decs.map((d,i)=>`<tr>
+    <td class="pref ed" contenteditable data-i="${i}" data-f="id">${d.id}</td>
+    <td class="ptitle ed" contenteditable data-i="${i}" data-f="item">${d.item}</td>
+    <td class="ed" contenteditable data-i="${i}" data-f="owner" style="white-space:nowrap">${d.owner}</td>
+    <td class="ed" contenteditable data-i="${i}" data-f="due" style="white-space:nowrap;font-weight:600">${d.due}</td>
+    <td><span class="pill clickable ${d.status==='resolved'?'green':'amber'}" data-tog="${i}" title="Click to toggle">${d.status==='resolved'?'Resolved':'Open'}</span></td>
+    <td class="ed" contenteditable data-i="${i}" data-f="why" style="color:var(--soft)">${d.why}</td>
+    <td><button class="delbtn" data-del="${i}" title="Delete line item">×</button></td>
+  </tr>`).join('');
+  const c = document.getElementById('decCount');
+  if (c) c.textContent = decs.filter(d=>d.status!=='resolved').length;
+}
+renderDecs();
+
+const decBody = document.getElementById('decRows');
+decBody.addEventListener('input', e=>{
+  const t = e.target.closest('[data-f]'); if(!t) return;
+  decs[+t.dataset.i][t.dataset.f] = t.innerText.trim();
+  saveDecs();
+});
+decBody.addEventListener('click', e=>{
+  const tog = e.target.closest('[data-tog]');
+  if (tog){ const d = decs[+tog.dataset.tog]; d.status = d.status==='resolved' ? 'open' : 'resolved'; saveDecs(); renderDecs(); return; }
+  const del = e.target.closest('[data-del]');
+  if (del && confirm('Delete '+(decs[+del.dataset.del].id||'this line')+'?')){ decs.splice(+del.dataset.del,1); saveDecs(); renderDecs(); }
+});
+document.getElementById('decAdd').onclick = ()=>{
+  decs.push({id:'DL-'+String(decs.length+1).padStart(2,'0'), item:'New decision — click to edit', owner:'—', due:'—', status:'open', why:'—'});
+  saveDecs(); renderDecs();
+  const last = decBody.querySelector('tr:last-child td[data-f="item"]');
+  if (last){ last.focus(); document.getSelection().selectAllChildren(last); }
+};
+document.getElementById('decReset').onclick = ()=>{
+  if (confirm('Discard local edits and restore the saved defaults?')){
+    localStorage.removeItem(DKEY); decs = DATA.decisions.map(d=>({...d})); renderDecs();
+  }
+};
+
+/* ---------- render: kpi bars ---------- */
+const max = Math.max(...DATA.kpiPosts.map(p=>p.v));
+document.getElementById('kpiBars').innerHTML = DATA.kpiPosts.map(p=>`
+  <div class="bar-row">
+    <div class="bar-t">${p.t}</div>
+    <div class="bar-track"><div class="bar-fill" style="--w:${Math.round(p.v/max*100)}%"></div></div>
+    <div class="bar-v">${p.v.toLocaleString('en-IN')}<br><small>${p.meta}</small></div>
+  </div>`).join('');
+
+/* ---------- render: flow ---------- */
+document.getElementById('flowSteps').innerHTML = DATA.flow.map(s=>`
+  <div class="step ${s.you?'you':''}">${s.you?'<span class="youtag">YOU</span>':''}
+    <div class="n">${s.n}</div><h4>${s.t}</h4><p>${s.d}</p>
+    <span class="dband">${s.day}</span>
+  </div>`).join('');
+
+/* ---------- render: week + assets ---------- */
+document.getElementById('weekRows').innerHTML = DATA.week.map(w=>'<li>'+w+'</li>').join('');
+document.getElementById('assetRows').innerHTML = DATA.assets.map(a=>`<tr>
+  <td class="ptitle">${a.item}</td><td>${a.need}</td>
+  <td style="white-space:nowrap;font-weight:600">${a.due}</td><td>${pill(a.status)}</td></tr>`).join('');
+
+/* ---------- pipeline views: switcher ---------- */
+document.querySelectorAll('.vbtn').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.vbtn').forEach(x => x.classList.toggle('active', x === b));
+  ['viewTable','viewKanban','viewCal'].forEach(id => {
+    document.getElementById(id).style.display = (id === b.dataset.v) ? '' : 'none';
+  });
+});
+
+/* ---------- pipeline views: kanban ---------- */
+const colFor = r => r.cur > 0 ? r.cur : r.done;
+const KCOLS = [{c:'prop',t:'Proposed'},{c:1,t:'Copy final'},{c:2,t:'In design'},{c:3,t:'Client review'},{c:4,t:'Scheduled'},{c:5,t:'Live'}];
+document.getElementById('viewKanban').innerHTML = KCOLS.map(col => {
+  const items = col.c === 'prop'
+    ? DATA.lean.map(l => ({...l, date:'TBD', pillar:'Lean', lean:true}))
+    : DATA.pipeline.filter(r => colFor(r) === col.c);
+  return `<div class="kcol"><h4>${col.t} <span>${items.length}</span></h4>` + items.map(r => `
+    <div class="kcard${r.lean ? ' leanc' : ''}">
+      <div class="kt">${r.p} · ${r.title}</div>
+      <div class="km">${r.date} · ${r.fmt}</div>
+      <div class="km2"><span class="ktag">${r.pillar}</span>${DATA.quickViews[r.p] ? '<button class="viewbtn" data-qv="'+r.p+'">View</button>' : ''}</div>
+    </div>`).join('') + '</div>';
+}).join('');
+
+/* ---------- pipeline views: calendar ---------- */
+const CAL_MONTHS = {Jun:5, Jul:6, Aug:7, Sep:8};
+const evts = {};
+DATA.pipeline.forEach(r => { const [mo,da] = r.date.split(' '); (evts[mo+(+da)] = evts[mo+(+da)] || []).push(r); });
+document.getElementById('viewCal').innerHTML = Object.entries(CAL_MONTHS).map(([mo,mi]) => {
+  const off = (new Date(2026, mi, 1).getDay() + 6) % 7;           /* week starts Monday */
+  const nd = new Date(2026, mi + 1, 0).getDate();
+  let cells = ['Mo','Tu','We','Th','Fr','Sa','Su'].map(d => `<div class="dow">${d}</div>`).join('');
+  for (let b = 0; b < off; b++) cells += '<div class="day off"></div>';
+  for (let d = 1; d <= nd; d++) {
+    const es = evts[mo+d] || [];
+    cells += `<div class="day${mi===5 && d===12 ? ' today' : ''}"><span class="dn">${d}</span>` +
+      es.map(r => DATA.quickViews[r.p]
+        ? `<span class="evt qv" data-qv="${r.p}" title="${r.title}">${r.p}</span>`
+        : `<span class="evt" title="${r.title}">${r.p}</span>`).join('') + '</div>';
+  }
+  return `<div class="cal"><h4>${mo} 2026</h4><div class="cgrid">${cells}</div></div>`;
+}).join('');
+
+/* ---------- quick view modal ---------- */
+function openQV(p){
+  const q = DATA.quickViews[p]; if (!q) return;
+  document.getElementById('qvTitle').textContent = p + ' — ' + q.title;
+  document.getElementById('qvMeta').textContent = q.meta;
+  document.getElementById('qvCap').textContent = q.caption;
+  document.getElementById('qvNote').textContent = q.note;
+  document.getElementById('qvOv').classList.add('open');
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-qv]');
+  if (b) openQV(b.dataset.qv);
+});
+document.getElementById('qvOv').addEventListener('click', e => {
+  if (e.target.id === 'qvOv' || e.target.closest('.mclose')) e.currentTarget.classList.remove('open');
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('qvOv').classList.remove('open'); });
+
+/* =====================================================================
+   ELECTRIC LAYER — countdown · scroll reveals · 3D tilt · hero canvas
+   ===================================================================== */
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* live countdown to P1 go-live */
+(function(){
+  const el = document.getElementById('cdown'); if (!el) return;
+  const t0 = new Date('2026-06-15T09:00:00+05:30').getTime();
+  (function tick(){
+    let s = Math.floor((t0 - Date.now()) / 1000);
+    if (s <= 0){ el.textContent = 'LIVE NOW'; return; }
+    const d = Math.floor(s/86400); s %= 86400;
+    const h = Math.floor(s/3600);  s %= 3600;
+    el.textContent = `${d}d ${h}h ${Math.floor(s/60)}m ${s%60}s`;
+    setTimeout(tick, 1000);
+  })();
+})();
+
+/* scroll-reveal with stagger */
+(function(){
+  const els = [...document.querySelectorAll('.card, .ssum, .step, .kc')];
+  if (REDUCED){ els.forEach(el => el.classList.add('no-rv')); return; }
+  els.forEach(el => el.classList.add('rv'));
+  const io = new IntersectionObserver(entries => entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    en.target.style.animationDelay = (els.indexOf(en.target) % 5) * 90 + 'ms';
+    en.target.classList.add('rv-in');
+    io.unobserve(en.target);
+  }), {threshold:.1});
+  els.forEach(el => io.observe(el));
+})();
+
+/* 3D tilt on hover */
+if (!REDUCED && matchMedia('(pointer:fine)').matches){
+  document.querySelectorAll('.ringcard, .kc, .ssum, .step').forEach(c => {
+    c.addEventListener('mousemove', ev => {
+      const r = c.getBoundingClientRect();
+      const x = (ev.clientX - r.left) / r.width - .5, y = (ev.clientY - r.top) / r.height - .5;
+      c.style.transform = `perspective(700px) rotateY(${(x*5).toFixed(2)}deg) rotateX(${(-y*5).toFixed(2)}deg) translateY(-2px)`;
+    });
+    c.addEventListener('mouseleave', () => { c.style.transform = ''; });
+  });
+}
+
+/* hero canvas: particle constellation + rotating wireframe tower */
+(function(){
+  const cv = document.getElementById('heroCanvas'); if (!cv || REDUCED) return;
+  const ctx = cv.getContext('2d'), hero = cv.parentElement;
+  const DPR = Math.min(devicePixelRatio || 1, 2);
+  let W, H, mx = .5, my = .5;
+  const size = () => { W = hero.clientWidth; H = hero.clientHeight; cv.width = W*DPR; cv.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); };
+  size(); addEventListener('resize', size);
+  hero.addEventListener('mousemove', e => { const r = hero.getBoundingClientRect(); mx = (e.clientX-r.left)/r.width; my = (e.clientY-r.top)/r.height; });
+
+  const P = Array.from({length:70}, () => ({
+    x:Math.random(), y:Math.random(),
+    vx:(Math.random()-.5)*.0007, vy:(Math.random()-.5)*.0007,
+    g:Math.random() < .35
+  }));
+
+  /* wireframe office tower: 5 stacked floor plates + columns */
+  const FLOORS = 5, FW = 120, FD = 120, FH = 34, verts = [], edges = [];
+  for (let f = 0; f <= FLOORS; f++){
+    const y = -f*FH, b = verts.length;
+    verts.push([-FW/2,y,-FD/2],[FW/2,y,-FD/2],[FW/2,y,FD/2],[-FW/2,y,FD/2]);
+    edges.push([b,b+1],[b+1,b+2],[b+2,b+3],[b+3,b]);
+    if (f > 0){ const p = b-4; edges.push([p,b],[p+1,b+1],[p+2,b+2],[p+3,b+3]); }
+  }
+  let rot = 0;
+
+  (function draw(){
+    ctx.clearRect(0,0,W,H);
+    /* constellation */
+    for (const p of P){
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > 1) p.vx *= -1;
+      if (p.y < 0 || p.y > 1) p.vy *= -1;
+    }
+    for (let i = 0; i < P.length; i++) for (let j = i+1; j < P.length; j++){
+      const dx = (P[i].x-P[j].x)*W, dy = (P[i].y-P[j].y)*H, d2 = dx*dx + dy*dy;
+      if (d2 < 12100){
+        ctx.strokeStyle = `rgba(180,29,62,${(1 - Math.sqrt(d2)/110)*.10})`;
+        ctx.beginPath(); ctx.moveTo(P[i].x*W, P[i].y*H); ctx.lineTo(P[j].x*W, P[j].y*H); ctx.stroke();
+      }
+    }
+    for (const p of P){
+      ctx.fillStyle = p.g ? 'rgba(217,119,6,.5)' : 'rgba(180,29,62,.38)';
+      ctx.beginPath(); ctx.arc(p.x*W, p.y*H, p.g ? 1.7 : 1.2, 0, 7); ctx.fill();
+    }
+    /* tower (skipped on narrow screens) */
+    if (W > 700){
+      rot += .004 + (mx-.5)*.004;
+      const tilt = .42 + (my-.5)*.18, cx = W*.87, cy = H*.80, sc = Math.min(W,H)/330;
+      const cos = Math.cos(rot), sin = Math.sin(rot);
+      const pts = verts.map(v => [cx + (v[0]*cos - v[2]*sin)*sc, cy + (v[1] + (v[0]*sin + v[2]*cos)*tilt)*sc]);
+      ctx.lineWidth = 1;
+      edges.forEach(([a,b], i) => {
+        ctx.strokeStyle = i % 3 === 0 ? 'rgba(217,119,6,.45)' : 'rgba(180,29,62,.30)';
+        ctx.beginPath(); ctx.moveTo(pts[a][0], pts[a][1]); ctx.lineTo(pts[b][0], pts[b][1]); ctx.stroke();
+      });
+      pts.forEach(p => { ctx.fillStyle = 'rgba(180,29,62,.65)'; ctx.fillRect(p[0]-1, p[1]-1, 2, 2); });
+    }
+    requestAnimationFrame(draw);
+  })();
+})();
+
+/* =====================================================================
+   INFO-VIZ LAYER — journey strip · trajectory chart · pillar donut
+   ===================================================================== */
+const PCOLORS = {'Governance':'#FEC917','Site Wisdom':'#E0224E','Checklists':'#3FD685','Cost':'#FF8A3D','Client Ed':'#5AA7FF','Leadership':'#B97DFF','Trends':'#9b878c'};
+
+/* journey strip: 15 Mondays on one line, colored by pillar */
+(function(){
+  const N = DATA.pipeline.length, x0 = 40, x1 = 1060, y = 56;
+  const xs = i => x0 + i*(x1-x0)/(N-1);
+  let nodes = '';
+  DATA.pipeline.forEach((r,i) => {
+    const x = xs(i), c = PCOLORS[r.pillar] || '#999', next = r.cur > 0;
+    nodes += `<g${DATA.quickViews[r.p] ? ` data-qv="${r.p}" style="cursor:pointer"` : ''}>
+      <title>${r.title} — ${r.date} (${r.pillar})</title>
+      ${next ? `<circle cx="${x}" cy="${y}" r="13" fill="none" stroke="#B41D3E">
+        <animate attributeName="r" values="10;17;10" dur="2.2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values=".9;0;.9" dur="2.2s" repeatCount="indefinite"/></circle>` : ''}
+      <circle cx="${x}" cy="${y}" r="${next?9:7}" fill="${c}" style="filter:drop-shadow(0 1px 3px rgba(28,27,26,.25))"/>
+      <text x="${x}" y="${y-15}" text-anchor="middle" font-size="10" font-weight="800" fill="#1c1b1a" font-family="Montserrat,sans-serif">${r.p}</text>
+      <text x="${x}" y="${y+27}" text-anchor="middle" font-size="8.5" font-weight="600" fill="#9a948e" font-family="Montserrat,sans-serif">${r.date}</text>
+    </g>`;
+  });
+  document.getElementById('journey').innerHTML =
+    `<svg viewBox="0 0 1100 95" xmlns="http://www.w3.org/2000/svg">
+      <line x1="${x0-16}" y1="${y}" x2="${x1+24}" y2="${y}" stroke="#e5dfd9" stroke-width="3" stroke-linecap="round"/>
+      <polygon points="${x1+30},${y} ${x1+18},${y-6} ${x1+18},${y+6}" fill="#e5dfd9"/>
+      ${nodes}
+    </svg>`;
+  document.getElementById('jLegend').innerHTML =
+    Object.entries(PCOLORS).map(([k,v]) => `<span><i style="background:${v}"></i>${k}</span>`).join('');
+})();
+
+/* trajectory: baseline 901 → 2,500 (P5) → 5,000+ (P15) */
+(function(){
+  const W=560, H=210, L=46, R=22, T=20, B=32, ymax=5500;
+  const yv = v => T + (H-T-B) * (1 - v/ymax);
+  const pts = [[L, yv(901), 'Now', '901'], [300, yv(2500), 'P5 · Jul 13', '2,500'], [W-R, yv(5000), 'P15 · Sep 21', '5,000+']];
+  const path = `M${pts[0][0]},${pts[0][1]} C 160,${pts[0][1]} 220,${pts[1][1]} ${pts[1][0]},${pts[1][1]} S ${W-R-90},${pts[2][1]} ${pts[2][0]},${pts[2][1]}`;
+  const grid = [1000,2500,5000].map(v =>
+    `<line x1="${L}" y1="${yv(v)}" x2="${W-R}" y2="${yv(v)}" stroke="#eee9e4" stroke-dasharray="3 5"/>
+     <text x="${L-8}" y="${yv(v)+3}" text-anchor="end" font-size="9" fill="#9a948e" font-family="Montserrat,sans-serif">${v>=1000 ? (v/1000)+'k' : v}</text>`).join('');
+  document.getElementById('projWrap').innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b41d3e" stop-opacity=".15"/>
+      <stop offset="1" stop-color="#b41d3e" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${grid}
+    <path d="${path} L ${W-R},${H-B} L ${L},${H-B} Z" fill="url(#pg)"/>
+    <path d="${path}" fill="none" stroke="#b41d3e" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 2px 5px rgba(180,29,62,.3))"/>
+    ${pts.map(p => `
+      <circle cx="${p[0]}" cy="${p[1]}" r="5.5" fill="#b41d3e" stroke="#ffffff" stroke-width="2"/>
+      <text x="${p[0]}" y="${p[1]-12}" text-anchor="${p[0] > W-110 ? 'end' : p[0] < 70 ? 'start' : 'middle'}" font-size="12" font-weight="800" fill="#1c1b1a" font-family="Montserrat,sans-serif">${p[3]}</text>
+      <text x="${p[0]}" y="${H-12}" text-anchor="${p[0] > W-110 ? 'end' : p[0] < 70 ? 'start' : 'middle'}" font-size="9" font-weight="700" fill="#9a948e" font-family="Montserrat,sans-serif">${p[2]}</text>`).join('')}
+  </svg>`;
+})();
+
+/* pillar donut: what the 15 posts talk about */
+(function(){
+  const counts = {};
+  DATA.pipeline.forEach(r => counts[r.pillar] = (counts[r.pillar]||0) + 1);
+  const R = 54, C = 2*Math.PI*R;
+  let off = 0, segs = '';
+  Object.entries(counts).forEach(([k,n]) => {
+    const len = C*n/DATA.pipeline.length;
+    segs += `<circle cx="75" cy="75" r="${R}" fill="none" stroke="${PCOLORS[k]}" stroke-width="20"
+      stroke-dasharray="${Math.max(len-2.5,2)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 75 75)"><title>${k}: ${n} posts</title></circle>`;
+    off += len;
+  });
+  document.getElementById('pillarDonut').innerHTML = segs +
+    `<text x="75" y="72" text-anchor="middle" font-size="23" font-weight="800" fill="#1c1b1a" font-family="Montserrat,sans-serif">15</text>
+     <text x="75" y="89" text-anchor="middle" font-size="9" font-weight="700" fill="#9a948e" font-family="Montserrat,sans-serif">POSTS</text>`;
+  document.getElementById('donutLegend').innerHTML =
+    Object.entries(counts).map(([k,n]) => `<span><i style="background:${PCOLORS[k]}"></i>${k} — <b>${n}</b></span>`).join('');
+})();
+</script>
+</body>
+</html>
