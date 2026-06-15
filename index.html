@@ -443,8 +443,24 @@
   .rc-note{font-size:11px;color:var(--soft);line-height:1.55}
   .rc-next{font-size:11.5px;font-weight:700;color:var(--crimson);margin-top:7px}
 
-  .modal{background:rgba(255,255,255,.78);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.8)}
+  .modal{background:rgba(255,255,255,.82);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.8);max-height:88vh;overflow-y:auto}
   .modal-ov{background:rgba(40,30,34,.35);backdrop-filter:blur(8px)}
+  /* version timeline */
+  .qver{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 16px}
+  .qchip{display:flex;flex-direction:column;gap:1px;padding:6px 12px;border-radius:12px;background:rgba(28,27,26,.05);border:1px solid var(--line);min-width:84px}
+  .qchip.cur{background:var(--red-bg);border-color:#e0b4bf}
+  .qchip .qv-v{font-size:12px;font-weight:800;color:var(--ink)}
+  .qchip.cur .qv-v{color:var(--crimson)}
+  .qchip .qv-d{font-size:9.5px;font-weight:700;color:var(--grey);letter-spacing:.03em}
+  .qchip .qv-s{font-size:9.5px;color:var(--soft);font-weight:600}
+  .qlabel{font-size:9.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);margin:0 0 7px}
+  /* carousel deck */
+  #qvDeckWrap{margin-top:18px}
+  .qdeck{display:grid;gap:9px}
+  .slide{display:flex;gap:11px;align-items:flex-start;background:rgba(255,255,255,.55);border:1px solid var(--line);border-radius:12px;padding:11px 13px;box-shadow:var(--shadow-sm)}
+  .slide .sn{flex:0 0 auto;font-size:9px;font-weight:800;letter-spacing:.04em;color:#fff;background:linear-gradient(135deg,var(--crimson),var(--maroon));padding:4px 8px;border-radius:7px;margin-top:1px;white-space:nowrap}
+  .slide.hook .sn{background:linear-gradient(135deg,#1c1b1a,#3a3330)}
+  .slide .stext{font-size:12.5px;line-height:1.5;color:var(--ink)}
 
   /* meeting notes */
   .mtg{padding:22px 24px;margin-bottom:14px}
@@ -535,7 +551,7 @@
     <div class="stage-sum">
       <div class="ssum gdone"><b>15/15</b><span>Copy final</span></div>
       <div class="ssum"><b>1</b><span>In design</span></div>
-      <div class="ssum"><b>0</b><span>Client review</span></div>
+      <div class="ssum"><b>4</b><span>With client</span></div>
       <div class="ssum"><b>0</b><span>Scheduled</span></div>
       <div class="ssum"><b>0</b><span>Live</span></div>
     </div>
@@ -660,7 +676,10 @@
     <button class="mclose" title="Close">×</button>
     <h3 id="qvTitle"></h3>
     <div class="qmeta" id="qvMeta"></div>
+    <div class="qver" id="qvVer"></div>
+    <div class="qlabel" id="qvCapLabel">Caption</div>
     <div class="cap" id="qvCap"></div>
+    <div id="qvDeckWrap"><div class="qlabel">Carousel deck</div><div class="qdeck" id="qvDeck"></div></div>
     <div class="qnote" id="qvNote"></div>
   </div>
 </div>
@@ -694,11 +713,11 @@ const DATA = {
 
   /* gates: 1=Copy 2=Design 3=Review 4=Scheduled 5=Live · done = gates completed, cur = gate in progress (0 = none) */
   pipeline:[
-    {p:'P1', ref:'W1',  date:'Jun 15', pillar:'Site Wisdom', title:'3 errors in 10 minutes',                 fmt:'Text + image',    done:1, cur:2, stage:'Revised · v3'},
-    {p:'P2', ref:'W2',  date:'Jun 22', pillar:'Governance',  title:'The Governance Gateway',                 fmt:'Carousel ×7',     done:1, cur:0, stage:'Copy final'},
-    {p:'P3', ref:'W5',  date:'Jun 29', pillar:'Checklists',  title:'25-Point Pre-Construction Checklist',    fmt:'Carousel ×9',     done:1, cur:0, stage:'Copy final'},
-    {p:'P4', ref:'W8',  date:'Jul 6',  pillar:'Leadership',  title:'25 years — the honest lessons',          fmt:'Text + photo',    done:1, cur:0, stage:'Copy final'},
-    {p:'P5', ref:'W9',  date:'Jul 13', pillar:'Cost',        title:'The hidden cost of delay',               fmt:'Carousel ×7',     done:1, cur:0, stage:'Copy final'},
+    {p:'P1', ref:'W1',  date:'Jun 15', pillar:'Site Wisdom', title:'3 errors in 10 minutes',                 fmt:'Text + image',    done:1, cur:2, stage:'v4 · in design'},
+    {p:'P2', ref:'W2',  date:'Jun 22', pillar:'Governance',  title:'The Governance Gateway',                 fmt:'Carousel ×7',     done:1, cur:3, stage:'v1 · to client'},
+    {p:'P3', ref:'W5',  date:'Jun 29', pillar:'Checklists',  title:'25-Point Pre-Construction Checklist',    fmt:'Carousel ×10',    done:1, cur:3, stage:'v1 · to client'},
+    {p:'P4', ref:'W8',  date:'Jul 6',  pillar:'Leadership',  title:'25 years — the honest lessons',          fmt:'Text + photo',    done:1, cur:3, stage:'v1 · to client'},
+    {p:'P5', ref:'W9',  date:'Jul 13', pillar:'Cost',        title:'The hidden cost of delay',               fmt:'Carousel ×7',     done:1, cur:3, stage:'v1 · to client'},
     {p:'P6', ref:'W10', date:'Jul 20', pillar:'Client Ed',   title:'10 questions before you appoint',        fmt:'Carousel ×12',    done:1, cur:0, stage:'Copy final'},
     {p:'P7', ref:'W12', date:'Jul 27', pillar:'Site Wisdom', title:'Scope creep cost ₹40 lakhs',             fmt:'Text + image',    done:1, cur:0, stage:'Copy final'},
     {p:'P8', ref:'W19', date:'Aug 3',  pillar:'Checklists',  title:'The handover pack you deserve',          fmt:'Carousel ×10',    done:1, cur:0, stage:'Copy final'},
@@ -718,16 +737,22 @@ const DATA = {
 
   quickViews:{
     P1:{
-      title:'3 errors in 10 minutes',
-      meta:'Mon Jun 15, 9:00 IST · Site Wisdom · Text + image · Stage: In design',
-      caption:`Last year, a client asked me to walk through their new office site in Mumbai. Work had just started. They wanted a second pair of eyes.
+      title:'P1 · 3 errors in 10 minutes',
+      meta:'Mon Jun 15 · Site Wisdom · Text + image · current: v4 (proposed)',
+      versions:[
+        {v:'v1', date:'04 Jun', status:'Pipeline shortlist'},
+        {v:'v2', date:'11 Jun', status:'Revision 2 draft'},
+        {v:'v3', date:'12 Jun', status:'Approved · Review #1'},
+        {v:'v4', date:'16 Jun', status:'Proposed refinement', current:true}
+      ],
+      caption:`A site does not create problems. It only reveals them.
 
-In the first ten minutes, I found three problems.
+Last year a client asked me to walk through their new office site in Mumbai. Work had just started, and they wanted a second pair of eyes. In the first ten minutes, I found three problems.
 
 I am not saying this to sound clever. After 25 years on construction sites, you learn where problems like to hide. Anyone with those years would have seen the same things.
 
 Problem 1 — Two teams were using the same space above the ceiling.
-The AC ducts and the fire sprinkler pipes were both drawn through the same area. Two consultants, two drawings — and nobody had put them on one sheet to check. Caught on site, this means three weeks of breaking and redoing work. Caught on paper, it is a two-hour meeting.
+The AC ducts and the fire sprinkler pipes were both drawn through the same area. Two consultants, two drawings, and nobody had put them on one sheet to check. Caught on site, this means three weeks of breaking and redoing work. Caught on paper, it is a two-hour meeting.
 
 Problem 2 — The ceiling height did not exist.
 The drawings promised a 2.9 metre clear ceiling. But the building's beam, plus all the pipes and ducts above, left only 2.65 metres. The partition team had already started marking walls against the wrong height.
@@ -735,16 +760,248 @@ The drawings promised a 2.9 metre clear ceiling. But the building's beam, plus a
 Problem 3 — A fire exit had quietly become narrower.
 A small layout change had reduced the width of an escape route. Every internal review had missed it. The fire department's inspection would not have missed it.
 
-Here is the honest part: the site team had done nothing wrong. All three problems were created months earlier — in drawings and approvals — when changes were made but never checked against each other.
+And the site team had done nothing wrong. All three problems were created months earlier, in drawings and approvals, when changes were made but never checked against each other.
 
-The site does not create problems. It only reveals them.
-
-That is why the paperwork needs as much attention as the brickwork. From day one. Not after the first crisis.
+That is why the paperwork needs as much attention as the brickwork, right from day one and not after the first crisis. Check the drawings against each other before work starts, and the site has far less to reveal.
 
 If you have walked into something similar on your projects, I would genuinely like to hear it.
 
 #CorporateInteriors #ProjectGovernance #OfficeFitOut #ProjectManagement`,
-      note:'v3 — rewritten Jun 12 to the new voice guide: simple English, story-first, honest, no boasting. Creative: needs a site photo in helmet + safety jacket (Review #1 rule — current suit photo replaced). Reaches you Wednesday; feedback by Friday.'
+      deck:[],
+      note:'v4 refinement (Jun 16): moved his signature line to the opener, removed the "honest part" label. v3 stays the approved baseline — Shravan picks at review. Photo must be helmet + safety jacket (not the suit shot).'
+    },
+
+    P2:{
+      title:'P2 · The Governance Gateway',
+      meta:'Mon Jun 22 · Governance · Carousel (7 slides) · current: v1',
+      versions:[{v:'v1', date:'16 Jun', status:'First draft · to client Wed Jun 17', current:true}],
+      caption:`"Why did this slip? We started on time."
+
+A client asked me this a few months ago, halfway through an office project. And he was right. The first worker arrived on the day we promised. On paper, nothing was late.
+
+The honest answer was harder. The project did not slip on site. It slipped in the quiet weeks before site, the gap between the day the contract was signed and the day work actually began. Nothing visible happens in that window, so it feels like dead time. Over the years I have learned to treat it as the most important part of the whole project.
+
+Four things need to be agreed and written down in those weeks. When they are, the project rarely surprises anyone later. When they are skipped, the project runs on luck.
+
+Here are the four.
+
+1. The approvals list.
+Who can approve what, up to what amount, and in how many days. It sounds basic. But on most projects nobody writes this down, so decisions sit and wait. A decision left waiting quietly costs more time than most people expect.
+
+2. The order plan for slow-to-arrive items.
+Some things take weeks or months to reach site. Special glass. Air-conditioning units. Imported finishes. Each one needs a simple "order by this date" deadline, worked backwards from when it is needed. Miss that date, and you inherit a delay you can no longer fix.
+
+3. The design freeze.
+A point where everyone agrees the design will not change, signed and dated. A freeze is a promise, not a suggestion. After it, every change still has a cost in time and money. That is fine, as long as everyone knows it going in.
+
+4. The decision list.
+Every decision still pending from the client side, written down, each with a name against it and a date by which it is needed. An open decision that nobody owns is simply an open risk waiting quietly.
+
+None of this is complicated. It is mostly an hour or two of agreeing things on paper before the rush begins.
+
+The honest part is this: when these four are skipped, it is rarely anyone's fault on site. The pressure to get moving makes it easy to leave them for later. Later is just when they cost more.
+
+If you have started a project where these were skipped, I would genuinely like to hear what it cost you.
+
+#ProjectGovernance #CorporateInteriors #OfficeFitOut #WorkplaceDelivery`,
+      deck:[
+        {n:'S1 · hook', text:`"Why did this slip? We started on time."
+
+A client asked me this halfway through an office project. He was right. The first worker arrived on the day we promised.`},
+        {n:'S2 · the window', text:`The project did not slip on site.
+
+It slipped in the quiet weeks before site, between a signed contract and the first day of work. Four things get locked there, or the project runs on luck.`},
+        {n:'S3 · item 1', text:`1. The approvals list
+
+Who approves what, up to what amount, in how many days. A decision left waiting quietly costs more time than most people expect.`},
+        {n:'S4 · item 2', text:`2. The order plan for slow-to-arrive items
+
+Glass, air-conditioning units, imported finishes. Each gets an "order by this date." Miss it, and you inherit the delay.`},
+        {n:'S5 · item 3', text:`3. The design freeze
+
+A signed, dated point where the design stops changing. A freeze is a promise, not a suggestion. Every change after it has a cost.`},
+        {n:'S6 · item 4', text:`4. The decision list
+
+Every pending client decision, written down, with a name against it and a date. An open decision nobody owns is an open risk.`},
+        {n:'S7 · close', text:`Lock these four cleanly, and the project rarely surprises anyone later.
+
+Shravan C. Mudaliar`}
+      ],
+      note:'Re-anchored off the already-published "fast-track" theme; coined "Gateway" label and the lead-magnet CTA removed per voice guide. Carousel publishes as a native PDF document.'
+    },
+
+    P3:{
+      title:'P3 · 25-Point Pre-Construction Checklist',
+      meta:'Mon Jun 29 · Checklists · Carousel (10 slides) · current: v1',
+      versions:[{v:'v1', date:'16 Jun', status:'First draft · to client Wed Jun 17', current:true}],
+      caption:`A few years ago, a project of ours got stuck in its very first week. Not because of anything on site. The flooring we needed was a special order, and nobody had placed that order early. It took six weeks to arrive. So the team stood and waited, on a site that was otherwise ready to go.
+
+It was one small thing. Easy to miss. And it taught me to never trust my memory at the start of a project.
+
+So now, before any wall goes up, I run the same set of checks. I built the list slowly over the years. Every line on it is there because, at some point, skipping it cost someone time or money.
+
+Most delays on an office project don't come from the work being hard. They come from work starting before the site was truly ready. A drawing wasn't final. An approval was still pending. A slow-to-arrive item hadn't been ordered. Small gaps, all of them. But once work begins, those small gaps turn into work stoppages.
+
+So I keep 25 checks, in five simple groups, and I don't let work start until they're clear:
+
+– Approvals and paperwork
+– Is the site actually ready
+– Are the drawings final
+– Are the materials and vendors sorted
+– Has the client signed off on the things that matter
+
+None of this is clever. It's just the boring part that decides whether the rest of the project stays calm.
+
+A project that starts clean tends to run clean. A project that starts with gaps spends the rest of its life closing them.
+
+I've put all 25 in the slides above. It's the kind of thing worth saving and pulling out at the start of your next office project — even just to ask your team, "have we checked these?"
+
+If you'd like the full one-page version to keep, comment CHECKLIST and I'll send it across.
+
+#CorporateInteriors #OfficeFitOut #ProjectManagement #WorkplaceDelivery`,
+      deck:[
+        {n:'S1 · hook', text:`A few years ago, a project got stuck in week one.
+
+Not because of the work. A special-order floor hadn't been ordered in time. The team waited six weeks.`},
+        {n:'S2 · why the list exists', text:`It was one small thing. Easy to miss.
+
+So now, before any wall goes up, I run the same 25 checks. Every one cost someone, once.`},
+        {n:'S3 · the five groups', text:`25 checks, five simple groups:
+
+1. Approvals & paperwork
+2. Is the site ready
+3. Are the drawings final
+4. Materials & vendors
+5. Client sign-offs`},
+        {n:'S4 · A: Approvals & paperwork', text:`Before work starts:
+
+– Government and building-owner clearances in hand
+– Fire & safety plan approved
+– Permission to work in the building's allowed hours
+– Site insurance active
+– Workers' licences in place`},
+        {n:'S5 · B: Is the site ready', text:`Is the site actually ready:
+
+– Site handed over to us, with photos on record
+– Power, water & temporary connections confirmed
+– Route for moving material, and lift access, agreed
+– Site office, storage & safety setup done
+– Old pipes and cables found and shut off`},
+        {n:'S6 · C: Are the drawings final', text:`Are the drawings final:
+
+– Final construction drawings released
+– A log tracking every change to every drawing
+– Electrical, plumbing and AC drawings put on one sheet and checked together
+– Ceiling layout checked against the real beam heights
+– Design locked — no more changes after this`},
+        {n:'S7 · D: Materials & vendors', text:`Materials & vendors sorted:
+
+– Buying orders go out only after the work is locked
+– Items that take a long time to arrive, ordered and tracked
+– One sheet: which vendor is responsible for which part
+– A calendar of material samples to approve
+– Sample build (a mock-up to approve before full work) scheduled`},
+        {n:'S8 · E: Client sign-offs', text:`What the client has signed off:
+
+– Approvals list signed
+– A list of pending decisions: who decides each, and by when
+– How changes will be handled, agreed in writing
+– Agreed how we'll report progress, and how often we'll meet
+– What "handover" means, defined on day one`},
+        {n:'S9 · takeaway', text:`A project that starts clean tends to run clean.
+
+Most delays aren't from hard work. They're from starting before the site was ready.`},
+        {n:'S10 · quiet close', text:`Worth saving for the start of your next project.
+
+A quiet checklist now saves a noisy month later.`}
+      ],
+      note:'Flagship save-magnet — likely the future pinned post. Every check written in plain words (no NOC/IFC/BOQ). Comment-CTA kept as a genuine offer.'
+    },
+
+    P4:{
+      title:'P4 · 25 years — the honest lessons',
+      meta:'Mon Jul 6 · Leadership · Text + photo · current: v1',
+      versions:[{v:'v1', date:'16 Jun', status:'First draft · to client Wed Jun 17', current:true}],
+      caption:`Early in my career, a carpenter twice my age stopped work one morning and asked me to come look at a wall.
+
+I had signed off on that wall myself. It was on the drawing, and I had checked it. He pointed quietly and said it was sitting right on top of one of the building's main support pillars. He was right. The drawing was wrong, and I had missed it.
+
+He could not read a drawing the way I could. But he had built enough rooms to read the building itself, and the building was telling him something the paper was not.
+
+That morning has stayed with me for years, and a couple of plain lessons came out of it.
+
+The first is that the site does not care about your title. It listens to whoever understands the building best in that moment. That day it was a carpenter, not the engineer who had signed the sheet.
+
+The second is that the oldest hands on a site are usually trying to tell you something before the problem gets expensive. I have learned to slow down when one of them goes quiet and starts looking at a corner for too long. That pause is rarely nothing.
+
+I should be honest about a mistake of my own too. On one of my early jobs, I knew a small thing was off on site, but the client was in a hurry and I did not want to be the person slowing everyone down. So I stayed quiet and told myself we would sort it out later. We did sort it out later, and it cost three times what it would have cost that week. Nobody had done anything wrong except me, for choosing to be polite instead of clear.
+
+None of this came from a book. It came from getting things wrong on real sites and trying not to repeat them.
+
+If you have spent years in this line of work, I would like to know one thing: what is the lesson you learned the hard way that you would pass on to someone just starting out? I would genuinely like to read them.
+
+#corporateInteriors #officeFitOut #projectManagement #workplaceDelivery`,
+      deck:[],
+      note:'His most human post — built to NOT repeat the published measuring-tape story (different anecdote, different lesson). Pair with a real reflective/on-site photo.'
+    },
+
+    P5:{
+      title:'P5 · The hidden cost of delay',
+      meta:'Mon Jul 13 · Cost · Carousel (7 slides) · current: v1',
+      versions:[{v:'v1', date:'16 Jun', status:'First draft · to client Wed Jun 17', current:true}],
+      caption:`A client once told me, after his office was finished and everyone had moved in, that the biggest cost of the whole project was never in our cost sheet at all.
+
+It was the delay.
+
+I think about that line often, because he was right. Delay is the one cost that nobody writes down. There is no line for it anywhere. But it quietly turns up later, in the year-end accounts, long after the project is closed.
+
+I saw this clearly on a Mumbai project a while ago. An office of about 60,000 square feet, worth roughly 15 crore. Everything was going fine, and then the move-in date slipped by 45 days. Not a disaster. Just a month and a half late. It happens often.
+
+Here is what those 45 days actually cost, even though no one had planned for them.
+
+You are already paying rent on the new office, but you cannot sit in it yet. So you are paying for empty space.
+
+At the same time, you cannot leave the old office, because the new one is not ready. Staying on past your lease usually costs more than your normal rent, not less.
+
+Your people end up split between two places. Half-packed, half-shifted, work slowing down. That lost time is real money, even if it is hard to see.
+
+And the site itself keeps running. Supervisors, equipment, security, all of it ticking along while nothing is actually getting finished.
+
+Add those four things up on a project this size, and 45 days can quietly cost somewhere between 2.5 and 3 crore. That is roughly 15 to 20 percent of the whole project value, on a delay nobody budgeted for.
+
+(These figures are illustrative, but they are close to what I have seen.)
+
+This is why I get serious about timelines early, before a single wall goes up. Locking decisions, controlling changes, protecting the schedule. It does not sound exciting. But that is how you buy those 45 days back, and that is the cheapest money you will ever save on a project.
+
+The delay never shows up in the cost sheet. It always shows up in the accounts.
+
+If you have lived through a slip like this, I would genuinely like to hear what it cost you. And if you know a finance or admin colleague who would find this useful, tag them.
+
+#ProjectGovernance #OfficeFitOut #CorporateInteriors #WorkplaceDelivery`,
+      deck:[
+        {n:'S1 · hook', text:`A client once told me his biggest project cost was never in our cost sheet at all.
+
+It was the delay.`},
+        {n:'S2 · the example', text:`A Mumbai project, a while ago.
+
+60,000 sq ft, about 15 crore. The move-in slipped by 45 days. (Figures illustrative.)`},
+        {n:'S3 · cost 1 · new rent', text:`Rent on the new office.
+
+You are paying for it. You just cannot sit in it yet.`},
+        {n:'S4 · cost 2 · old office', text:`Staying on in the old office.
+
+You cannot leave until the new one is ready. Past the lease, it usually costs more, not less.`},
+        {n:'S5 · cost 3+4 · people & site', text:`Lost work time and a site still running.
+
+Teams split between two places. Supervisors, equipment and security ticking on while nothing finishes.`},
+        {n:'S6 · the total', text:`Add it up: 2.5 to 3 crore. Roughly 15-20% of the project. (Illustrative.)
+
+Invisible in the cost sheet. Very visible in the year-end accounts.`},
+        {n:'S7 · quiet close', text:`The delay never shows up in the cost sheet.
+
+It always shows up in the accounts.`}
+      ],
+      note:'Cost angle on delay (complements his published "fast-track" post rather than repeating it). All figures labelled illustrative. CFO/admin audience, plain words.'
     }
   },
 
@@ -1036,11 +1293,29 @@ document.getElementById('viewCal').innerHTML = Object.entries(CAL_MONTHS).map(([
 
 /* ---------- quick view modal ---------- */
 function openQV(p){
-  const q = DATA.quickViews[p]; if (!q) return;
-  document.getElementById('qvTitle').textContent = p + ' — ' + q.title;
+  const q = DATA.quickViews[p];
+  if (!q) return;
+  document.getElementById('qvTitle').textContent = q.title;
   document.getElementById('qvMeta').textContent = q.meta;
+  // version timeline
+  const vEl = document.getElementById('qvVer');
+  vEl.innerHTML = (q.versions || []).map(v =>
+    `<div class="qchip${v.current ? ' cur' : ''}"><span class="qv-v">${v.v}${v.current ? ' ·now' : ''}</span><span class="qv-d">${v.date}</span><span class="qv-s">${v.status}</span></div>`
+  ).join('');
+  vEl.style.display = (q.versions && q.versions.length) ? 'flex' : 'none';
+  // caption
   document.getElementById('qvCap').textContent = q.caption;
-  document.getElementById('qvNote').textContent = q.note;
+  // deck
+  const dWrap = document.getElementById('qvDeckWrap');
+  if (q.deck && q.deck.length){
+    document.getElementById('qvDeck').innerHTML = q.deck.map((s, i) =>
+      `<div class="slide${i === 0 ? ' hook' : ''}"><span class="sn">${s.n}</span><span class="stext">${s.text}</span></div>`
+    ).join('');
+    dWrap.style.display = 'block';
+  } else { dWrap.style.display = 'none'; }
+  // note
+  document.getElementById('qvNote').textContent = q.note || '';
+  document.getElementById('qvNote').style.display = q.note ? 'block' : 'none';
   document.getElementById('qvOv').classList.add('open');
 }
 document.addEventListener('click', e => {
