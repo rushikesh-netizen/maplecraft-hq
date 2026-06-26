@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex"/>
+<title>Maplecraft — LinkedIn Carousels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --crimson:#B41D3E; --maroon:#901732; --yellow:#FEC917; --grey:#989898;
+    --ink:#232323; --soft:#6b6b6b; --paper:#ffffff; --line:#e8e2e0;
+    --slideW:1080px; --slideH:1350px; /* 4:5 LinkedIn document */
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{font-family:'Montserrat',system-ui,sans-serif; background:#1a1a1a; color:var(--ink); -webkit-font-smoothing:antialiased}
+
+  /* ---- top control bar (screen only) ---- */
+  .bar{position:sticky; top:0; z-index:50; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    background:#111; color:#fff; padding:12px 18px; border-bottom:1px solid #2a2a2a}
+  .bar h1{font-size:15px; font-weight:800; letter-spacing:.02em; margin-right:8px}
+  .bar h1 b{color:var(--yellow)}
+  .bar .pick{display:flex; gap:6px}
+  .bar button{font-family:inherit; font-size:12px; font-weight:700; padding:7px 13px; border-radius:999px;
+    border:1px solid #3a3a3a; background:#1d1d1d; color:#ddd; cursor:pointer}
+  .bar button.active{background:var(--crimson); border-color:var(--crimson); color:#fff}
+  .bar .meta{margin-left:auto; font-size:11px; color:#9a9a9a; font-weight:600}
+  .bar .pdf{background:var(--yellow); color:#1a1a1a; border-color:var(--yellow)}
+
+  /* ---- stage: horizontal snap preview ---- */
+  .stage{display:flex; gap:26px; overflow-x:auto; scroll-snap-type:x mandatory; padding:30px 26px 40px}
+  .scaler{scroll-snap-align:center; flex:0 0 auto}
+
+  /* ---- the slide (1080x1350) ---- */
+  .slide{width:var(--slideW); height:var(--slideH); background:var(--paper); position:relative; overflow:hidden;
+    transform-origin:top left; display:flex; flex-direction:column}
+  .slide .frame{position:absolute; inset:0; border:14px solid var(--paper); pointer-events:none}
+  /* brand top */
+  .s-top{display:flex; align-items:center; justify-content:space-between; padding:40px 56px 0}
+  .wm{display:flex; flex-direction:column; line-height:1}
+  .wm .w1{font-size:34px; font-weight:800; color:var(--crimson); letter-spacing:-.01em}
+  .wm .w1 span{color:var(--ink)} /* not used; keeps option open */
+  .wm .w2{font-size:13px; font-weight:600; letter-spacing:.52em; color:var(--grey); margin-top:5px; padding-left:2px}
+  .s-top .mark{width:54px; height:54px; flex:0 0 auto}
+  .pageno{font-size:15px; font-weight:800; color:var(--grey)}
+
+  /* body */
+  .s-body{flex:1; padding:34px 56px 0; display:flex; flex-direction:column; justify-content:center}
+  .s-foot{display:flex; align-items:center; justify-content:space-between; padding:0 56px 40px}
+  .tagline{font-size:13px; font-weight:800; letter-spacing:.16em; color:var(--crimson)}
+  .tagline b{color:var(--ink)}
+  .foot-r{font-size:13px; font-weight:600; color:var(--grey)}
+
+  /* COVER / hook (maroon) */
+  .slide.cover{background:var(--maroon); color:#fff}
+  .slide.cover .wm .w1{color:#fff}
+  .slide.cover .wm .w2{color:rgba(255,255,255,.7)}
+  .slide.cover .pageno{color:rgba(255,255,255,.55)}
+  .cover .kicker{font-size:22px; font-weight:700; letter-spacing:.04em; color:var(--yellow); text-transform:uppercase; margin-bottom:26px}
+  .cover .title{font-size:74px; font-weight:800; line-height:1.06; letter-spacing:-.015em}
+  .cover .title .hl{color:var(--yellow)}
+  .cover .sub{font-size:27px; font-weight:500; color:rgba(255,255,255,.82); margin-top:30px; line-height:1.4; max-width:84%}
+  .slide.cover .tagline{color:var(--yellow)}
+  .slide.cover .tagline b{color:#fff}
+  .slide.cover .foot-r{color:rgba(255,255,255,.6)}
+  .cover .rule{width:96px; height:7px; background:var(--yellow); border-radius:4px; margin:0 0 30px}
+
+  /* SECTION (white, numbered category + checklist) */
+  .sec-head{display:flex; align-items:center; gap:22px; margin-bottom:34px}
+  .badge{flex:0 0 auto; width:84px; height:84px; border-radius:18px; background:var(--crimson); color:#fff;
+    font-size:40px; font-weight:800; display:flex; align-items:center; justify-content:center}
+  .sec-head .cat{font-size:38px; font-weight:800; color:var(--ink); line-height:1.1}
+  .sec-head .cat small{display:block; font-size:18px; font-weight:700; letter-spacing:.18em; color:var(--crimson); text-transform:uppercase; margin-bottom:6px}
+  ul.checks{list-style:none; display:flex; flex-direction:column; gap:20px}
+  ul.checks li{display:flex; gap:18px; align-items:flex-start; font-size:29px; font-weight:500; color:#2c2c2c; line-height:1.32}
+  ul.checks li::before{content:"✓"; flex:0 0 auto; width:40px; height:40px; border-radius:9px; background:#fbe7eb; color:var(--crimson);
+    font-size:23px; font-weight:800; display:flex; align-items:center; justify-content:center; margin-top:1px}
+  .sec-note{margin-top:30px; font-size:27px; font-weight:700; font-style:italic; color:var(--crimson); line-height:1.3}
+
+  /* STAT */
+  .stat .label{font-size:30px; font-weight:600; color:var(--soft); margin-bottom:14px; line-height:1.3}
+  .stat .figure{font-size:150px; font-weight:900; color:var(--crimson); line-height:.95; letter-spacing:-.02em}
+  .stat .sub{font-size:26px; font-weight:500; color:#3a3a3a; margin-top:24px; line-height:1.4; max-width:88%}
+
+  /* STATEMENT / takeaway */
+  .statement .big{font-size:60px; font-weight:800; line-height:1.12; letter-spacing:-.01em; color:var(--ink)}
+  .statement .big .hl{color:var(--crimson)}
+
+  /* CTA (maroon) */
+  .slide.cta{background:var(--maroon); color:#fff}
+  .slide.cta .wm .w1{color:#fff}
+  .slide.cta .wm .w2{color:rgba(255,255,255,.7)}
+  .slide.cta .pageno{color:rgba(255,255,255,.55)}
+  .cta .ctitle{font-size:62px; font-weight:800; line-height:1.1; letter-spacing:-.01em}
+  .cta .ctitle .hl{color:var(--yellow)}
+  .cta .csub{font-size:28px; font-weight:500; color:rgba(255,255,255,.85); margin-top:26px; line-height:1.4}
+  .cta .person{margin-top:48px; padding-top:28px; border-top:2px solid rgba(255,255,255,.22)}
+  .cta .person .nm{font-size:30px; font-weight:800}
+  .cta .person .rl{font-size:20px; font-weight:500; color:rgba(255,255,255,.72); margin-top:6px; line-height:1.35}
+  .slide.cta .tagline{color:var(--yellow)}
+  .slide.cta .tagline b{color:#fff}
+  .slide.cta .foot-r{color:rgba(255,255,255,.6)}
+
+  .empty{color:#fff; padding:60px; font-size:15px; text-align:center; width:100%}
+
+  /* ---- print: one slide per page ---- */
+  @page{size:1080px 1350px; margin:0}
+  @media print{
+    body{background:#fff}
+    .bar{display:none}
+    .stage{display:block; padding:0; overflow:visible}
+    .scaler{transform:none !important; width:auto !important; height:auto !important; margin:0}
+    .slide{break-after:page; page-break-after:always; transform:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="bar">
+  <h1>Maplecraft <b>Carousels</b></h1>
+  <div class="pick" id="pick"></div>
+  <button class="pdf" onclick="window.print()">⤓ Save as PDF</button>
+  <span class="meta" id="meta"></span>
+</div>
+<div class="stage" id="stage"></div>
+
+<script>
+/* ===== BRAND MARK (inline SVG approximation of the maplecraft M) ===== */
+const MARK = `<svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
+  <path d="M8 12 L34 12 L50 50 L34 50 Z" fill="#B41D3E"/>
+  <path d="M92 12 L66 12 L50 50 L66 50 Z" fill="#FEC917"/>
+  <path d="M30 12 L50 88 L46 50 Z" fill="#901732"/>
+  <path d="M70 12 L50 88 L54 50 Z" fill="#989898"/>
+</svg>`;
+
+/* ===== DECKS — populated from the production workflow's final decks =====
+   Slide types: cover | section | stat | statement | cta
+   (placeholder content below — replaced with final copy after the critic pipeline) */
+const DECKS = {
+  P2: { title:'P2 · The Pre-Start Lock', slides:[
+    {type:'cover', kicker:'The Pre-Start Window', title:`A fit-out doesn't fail on site.<br>It fails <span class="hl">3 weeks before</span> anyone reaches it.`, sub:`The weeks between signing the contract and the first worker arriving — where the project is really decided.`},
+    {type:'statement', text:`Lock four things in that window,<br><span class="hl">or the project runs on luck.</span>`},
+    {type:'section', num:'1', kicker:'Lock the start', cat:'Who approves what', items:[`Every decision has one owner`,`Every owner has a deadline`], note:`Slow approvals quietly eat the schedule.`},
+    {type:'section', num:'2', kicker:'Lock the start', cat:'Order-by dates', items:[`Fix the last safe day to order every slow-arriving item`,`Start with the glass and the lighting — usually the longest waits`], note:`Miss the date, inherit the delay.`},
+    {type:'section', num:'3', kicker:'Lock the start', cat:'Design freeze', items:[`On paper. Signed. Dated.`], note:`A freeze is a commitment, not a polite request.`},
+    {type:'section', num:'4', kicker:'Lock the start', cat:'Decision log', items:[`Every open decision gets one owner and a deadline`], note:`An open decision is an open risk.`},
+    {type:'cta', title:`Lock the start <span class="hl">before</span> the site opens.`, sub:`The Pre-Start Lock — small lock, big save.`},
+  ]},
+  P3: { title:'P3 · 25-Point Pre-Construction Check', slides:[
+    {type:'cover', kicker:'Week 1 decides Month 3', title:`The 25 checks I run <span class="hl">before</span> a single partition goes up.`, sub:`The ones nobody does are the ones that cost you. Save this.`},
+    {type:'section', num:'A', kicker:'Group A', cat:'Approvals & Compliance', items:[`1. Government & building approvals in hand`,`2. Fire & safety plan signed off`,`3. Working-hours & building permissions cleared`,`4. Construction insurance active`,`5. Labour licences & worker records in order`]},
+    {type:'section', num:'B', kicker:'Group B', cat:'Site Readiness', items:[`6. Site handover recorded with photos`,`7. Power, water & temporary services live`,`8. Material route & lift access agreed`,`9. Site office, storage & safety set up`,`10. Existing pipes & cables found and isolated`]},
+    {type:'section', num:'C', kicker:'Group C', cat:'Drawings & Design', items:[`11. Final construction drawings released`,`12. Drawing list & version control live`,`13. All service drawings checked against each other`,`14. Ceiling plan checked against the real beam heights`,`15. Design freeze formally signed`]},
+    {type:'section', num:'D', kicker:'Group D', cat:'Vendors & Procurement', items:[`16. Orders placed against locked scope`,`17. Items that take weeks to arrive ordered early, tracker live`,`18. Who-does-what between vendors agreed`,`19. Sample approvals calendared`,`20. Mock-up schedule confirmed`]},
+    {type:'section', num:'E', kicker:'Group E', cat:'Client Sign-offs', items:[`21. Who-approves-what list signed`,`22. Decision log opened, with owners & dates`,`23. Change process agreed in writing`,`24. Reporting format & meeting rhythm fixed`,`25. Handover requirements defined on day one`]},
+    {type:'statement', text:`Run it once on paper,<br><span class="hl">or chase it all year on site.</span>`},
+    {type:'statement', text:`A project doesn't run late because the site was slow.<br>It runs late because it <span class="hl">started before it was ready.</span>`},
+    {type:'cta', title:`Save this for your next fit-out.`, sub:`Follow Shravan C. Mudaliar for field-tested execution tools.`},
+  ]},
+  P5: { title:'P5 · The Hidden Cost of Delay', slides:[
+    {type:'cover', kicker:'The line nobody budgets', title:`The most expensive line in your project <span class="hl">never shows up in the budget.</span>`, sub:`It's delay.`},
+    {type:'stat', label:`The sample · Mumbai fit-out  (figures illustrative)`, figure:`45 days`, sub:`A ₹15 cr, 60,000 sq ft office that slips by six weeks. Here's what those days actually cost.`},
+    {type:'stat', label:`01 · Rent you can't use yet`, figure:`₹1.35 Cr`, sub:`Paying for the new space while it sits empty, at ₹150/sq ft a month.`},
+    {type:'stat', label:`02 · Your old office, longer`, figure:`₹50–70 L`, sub:`Holding your current office past the deadline, typically at 120–150% rent.`},
+    {type:'stat', label:`03 · People & site`, figure:`₹20–30 L+`, sub:`Lost productivity and a second move, plus 2–3% of the project in idle site cost.`},
+    {type:'stat', label:`The total nobody budgeted`, figure:`₹2.5–3 Cr`, sub:`15–20% of the whole project. Invisible in the budget. Brutal on the P&L.`},
+    {type:'statement', text:`The Cost-of-Delay check:<br><span class="hl">(rent × months slipped) + old-office overlap + a second move + idle site cost.</span><br>A 45-day slip ≈ 15–20% of project value.`},
+    {type:'cta', title:`Make the date a <span class="hl">plan</span>, not a hope.`, sub:`The Schedule Risk Review — every approval and long-lead item mapped to a dated, owned timeline before work starts.`},
+  ]},
+};
+
+/* ===== render ===== */
+const wm = (light)=>`<div class="wm"><div class="w1">maplecraft</div><div class="w2">INTERIORS</div></div>`;
+const foot = (i,n)=>`<div class="s-foot"><div class="tagline">EXECUTION EXCELLENCE. <b>DELIVERED.</b></div><div class="foot-r">${i+1} / ${n}</div></div>`;
+
+function renderSlide(s, i, n){
+  const top = `<div class="s-top">${wm()}${MARK}</div>`;
+  if(s.type==='cover') return `<div class="slide cover">
+    <div class="s-top">${wm(1)}<div class="pageno">SWIPE →</div></div>
+    <div class="s-body">${s.kicker?`<div class="kicker">${s.kicker}</div>`:''}<div class="rule"></div>
+      <div class="title">${s.title}</div>${s.sub?`<div class="sub">${s.sub}</div>`:''}</div>
+    ${foot(i,n)}</div>`;
+  if(s.type==='section') return `<div class="slide">${top}
+    <div class="s-body"><div class="sec-head"><div class="badge">${s.num}</div>
+      <div class="cat">${s.kicker?`<small>${s.kicker}</small>`:''}${s.cat}</div></div>
+      <ul class="checks">${(s.items||[]).map(it=>`<li>${it}</li>`).join('')}</ul>
+      ${s.note?`<div class="sec-note">${s.note}</div>`:''}</div>
+    ${foot(i,n)}</div>`;
+  if(s.type==='stat') return `<div class="slide">${top}
+    <div class="s-body stat">${s.label?`<div class="label">${s.label}</div>`:''}
+      <div class="figure">${s.figure}</div>${s.sub?`<div class="sub">${s.sub}</div>`:''}</div>
+    ${foot(i,n)}</div>`;
+  if(s.type==='statement') return `<div class="slide">${top}
+    <div class="s-body statement"><div class="big">${s.text}</div></div>${foot(i,n)}</div>`;
+  if(s.type==='cta') return `<div class="slide cta">
+    <div class="s-top">${wm(1)}<div class="pageno"></div></div>
+    <div class="s-body"><div class="ctitle">${s.title}</div>${s.sub?`<div class="csub">${s.sub}</div>`:''}
+      <div class="person"><div class="nm">Shravan C. Mudaliar</div><div class="rl">Corporate Interior Execution &amp; Workplace Delivery · 25 years · 2.5M+ sq ft · 350+ projects</div></div></div>
+    ${foot(i,n)}</div>`;
+  return `<div class="slide"><div class="s-body">${s.text||''}</div></div>`;
+}
+
+function fit(){
+  document.querySelectorAll('.scaler').forEach(sc=>{
+    const slide=sc.querySelector('.slide'); if(!slide) return;
+    const maxH=window.innerHeight-150, maxW=window.innerWidth-80;
+    const k=Math.min(maxH/1350, maxW/1080, 0.62);
+    slide.style.transform=`scale(${k})`;
+    sc.style.width=(1080*k)+'px'; sc.style.height=(1350*k)+'px';
+  });
+}
+function show(key){
+  const d=DECKS[key]; const stage=document.getElementById('stage');
+  document.querySelectorAll('#pick button').forEach(b=>b.classList.toggle('active', b.dataset.k===key));
+  document.getElementById('meta').textContent = d.title + ' · ' + (d.slides.length||0) + ' slides';
+  if(!d.slides.length){ stage.innerHTML=`<div class="empty">Final slides for ${key} land here once the copy workflow completes.</div>`; return; }
+  stage.innerHTML = d.slides.map((s,i)=>`<div class="scaler">${renderSlide(s,i,d.slides.length)}</div>`).join('');
+  fit();
+}
+const pick=document.getElementById('pick');
+Object.keys(DECKS).forEach(k=>{ const b=document.createElement('button'); b.dataset.k=k; b.textContent=k; b.onclick=()=>show(k); pick.appendChild(b); });
+const start=new URLSearchParams(location.search).get('post');
+show(DECKS[start]?start:'P3');
+window.addEventListener('resize', fit);
+</script>
+</body>
+</html>
