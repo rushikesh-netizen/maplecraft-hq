@@ -679,8 +679,11 @@
     <div class="qver" id="qvVer"></div>
     <div class="qlabel" id="qvCapLabel">Caption</div>
     <div class="cap" id="qvCap"></div>
+    <div id="qvCarouselFrameWrap" style="display:none">
+      <div class="qlabel">Designed carousel — swipe →<a id="qvCarousel" target="_blank" rel="noopener" style="float:right;font-weight:700;color:var(--crimson);text-decoration:none;font-size:11px">⤢ full screen · PDF ↗</a></div>
+      <iframe id="qvCarouselFrame" title="Designed carousel" style="width:100%;height:66vh;border:1px solid var(--line);border-radius:12px;background:#ededed;display:block"></iframe>
+    </div>
     <div id="qvDeckWrap"><div class="qlabel">Carousel deck</div><div class="qdeck" id="qvDeck"></div></div>
-    <div id="qvCarouselWrap" style="display:none;margin-top:14px"><a id="qvCarousel" class="toolbtn" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block">🎴 Open the designed carousel ↗</a></div>
     <div class="qnote" id="qvNote"></div>
   </div>
 </div>
@@ -1259,10 +1262,20 @@ function openQV(p){
     ).join('');
     dWrap.style.display = 'block';
   } else { dWrap.style.display = 'none'; }
-  // designed carousel link
-  const cWrap = document.getElementById('qvCarouselWrap');
+  // designed carousel — rendered inline in an iframe (primary view; replaces the text deck for carousel posts)
+  const cFrameWrap = document.getElementById('qvCarouselFrameWrap');
+  const cFrame = document.getElementById('qvCarouselFrame');
   const cA = document.getElementById('qvCarousel');
-  if (q.carousel){ cA.href = q.carousel; cWrap.style.display = 'block'; } else { cWrap.style.display = 'none'; }
+  if (q.carousel){
+    const src = q.carousel + (q.carousel.includes('?') ? '&' : '?') + 'embed=1';
+    if (cFrame.getAttribute('src') !== src) cFrame.setAttribute('src', src);
+    cA.href = q.carousel;
+    cFrameWrap.style.display = 'block';
+    dWrap.style.display = 'none';
+  } else {
+    cFrameWrap.style.display = 'none';
+    cFrame.removeAttribute('src');
+  }
   // note
   document.getElementById('qvNote').textContent = q.note || '';
   document.getElementById('qvNote').style.display = q.note ? 'block' : 'none';

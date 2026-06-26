@@ -104,6 +104,11 @@
 
   .empty{color:#fff; padding:60px; font-size:15px; text-align:center; width:100%}
 
+  /* ---- embed mode (inside the dashboard View modal) ---- */
+  body.embed{background:#ededed}
+  body.embed .bar{display:none}
+  body.embed .stage{padding:14px 14px 18px}
+
   /* ---- print: one slide per page ---- */
   @page{size:1080px 1350px; margin:0}
   @media print{
@@ -127,6 +132,10 @@
 <script>
 /* ===== PERSONAL MARK — Shravan's initials (colour only, no company logo) ===== */
 const MARK = `<div style="width:54px;height:54px;border-radius:13px;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;letter-spacing:.01em">SM</div>`;
+
+/* embed mode = rendered inside the dashboard View modal (toolbar hidden, slides scale to the frame) */
+const EMBED = new URLSearchParams(location.search).get('embed')==='1';
+if(EMBED) document.body.classList.add('embed');
 
 /* ===== DECKS — populated from the production workflow's final decks =====
    Slide types: cover | section | stat | statement | cta
@@ -197,8 +206,8 @@ function renderSlide(s, i, n){
 function fit(){
   document.querySelectorAll('.scaler').forEach(sc=>{
     const slide=sc.querySelector('.slide'); if(!slide) return;
-    const maxH=window.innerHeight-150, maxW=window.innerWidth-80;
-    const k=Math.min(maxH/1350, maxW/1080, 0.62);
+    const maxH=window.innerHeight-(EMBED?22:150), maxW=window.innerWidth-(EMBED?22:80);
+    const k=Math.min(maxH/1350, maxW/1080, EMBED?1:0.62);
     slide.style.transform=`scale(${k})`;
     sc.style.width=(1080*k)+'px'; sc.style.height=(1350*k)+'px';
   });
