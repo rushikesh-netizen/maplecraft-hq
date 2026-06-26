@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="robots" content="noindex"/>
-<title>Maplecraft — LinkedIn Carousels</title>
+<title>Shravan C. Mudaliar — LinkedIn Carousels</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet"/>
 <style>
@@ -41,7 +41,7 @@
   .wm{display:flex; flex-direction:column; line-height:1}
   .wm .w1{font-size:34px; font-weight:800; color:var(--crimson); letter-spacing:-.01em}
   .wm .w1 span{color:var(--ink)} /* not used; keeps option open */
-  .wm .w2{font-size:13px; font-weight:600; letter-spacing:.52em; color:var(--grey); margin-top:5px; padding-left:2px}
+  .wm .w2{font-size:12px; font-weight:700; letter-spacing:.22em; color:var(--grey); margin-top:6px; padding-left:2px}
   .s-top .mark{width:54px; height:54px; flex:0 0 auto}
   .pageno{font-size:15px; font-weight:800; color:var(--grey)}
 
@@ -117,7 +117,7 @@
 </head>
 <body>
 <div class="bar">
-  <h1>Maplecraft <b>Carousels</b></h1>
+  <h1>Shravan <b>Carousels</b></h1>
   <div class="pick" id="pick"></div>
   <button class="pdf" onclick="window.print()">⤓ Save as PDF</button>
   <span class="meta" id="meta"></span>
@@ -125,53 +125,47 @@
 <div class="stage" id="stage"></div>
 
 <script>
-/* ===== BRAND MARK (inline SVG approximation of the maplecraft M) ===== */
-const MARK = `<svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
-  <path d="M8 12 L34 12 L50 50 L34 50 Z" fill="#B41D3E"/>
-  <path d="M92 12 L66 12 L50 50 L66 50 Z" fill="#FEC917"/>
-  <path d="M30 12 L50 88 L46 50 Z" fill="#901732"/>
-  <path d="M70 12 L50 88 L54 50 Z" fill="#989898"/>
-</svg>`;
+/* ===== PERSONAL MARK — Shravan's initials (colour only, no company logo) ===== */
+const MARK = `<div style="width:54px;height:54px;border-radius:13px;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;letter-spacing:.01em">SM</div>`;
 
 /* ===== DECKS — populated from the production workflow's final decks =====
    Slide types: cover | section | stat | statement | cta
    (placeholder content below — replaced with final copy after the critic pipeline) */
 const DECKS = {
-  P2: { title:'P2 · The Pre-Start Lock', slides:[
-    {type:'cover', kicker:'The Pre-Start Window', title:`A fit-out doesn't fail on site.<br>It fails <span class="hl">3 weeks before</span> anyone reaches it.`, sub:`The weeks between signing the contract and the first worker arriving — where the project is really decided.`},
-    {type:'statement', text:`Lock four things in that window,<br><span class="hl">or the project runs on luck.</span>`},
-    {type:'section', num:'1', kicker:'Lock the start', cat:'Who approves what', items:[`Every decision has one owner`,`Every owner has a deadline`], note:`Slow approvals quietly eat the schedule.`},
-    {type:'section', num:'2', kicker:'Lock the start', cat:'Order-by dates', items:[`Fix the last safe day to order every slow-arriving item`,`Start with the glass and the lighting — usually the longest waits`], note:`Miss the date, inherit the delay.`},
-    {type:'section', num:'3', kicker:'Lock the start', cat:'Design freeze', items:[`On paper. Signed. Dated.`], note:`A freeze is a commitment, not a polite request.`},
-    {type:'section', num:'4', kicker:'Lock the start', cat:'Decision log', items:[`Every open decision gets one owner and a deadline`], note:`An open decision is an open risk.`},
-    {type:'cta', title:`Lock the start <span class="hl">before</span> the site opens.`, sub:`The Pre-Start Lock — small lock, big save.`},
+  P2: { title:'P2 · The Governance Gateway', slides:[
+    {type:'cover', kicker:'The Pre-Start Window', title:`Most office projects don't fail during construction.<br>They fail <span class="hl">3 weeks before</span> it begins.`, sub:`The quiet window between signing the contract and the first worker reaching site.`},
+    {type:'statement', text:`THE PRE-START WINDOW —<br><span class="hl">the weeks that decide whether the project runs on rails or on luck.</span>`},
+    {type:'section', num:'1', kicker:'Lock the start', cat:'Who approves what', items:[`Every decision — its owner`,`Its spending limit`,`How many days it can sit`], note:`Slow decisions quietly kill schedules.`},
+    {type:'section', num:'2', kicker:'Lock the start', cat:'Order-by dates', items:[`Every long-lead item mapped to an order date`,`Glass, AC units, imported finishes first`], note:`Miss the date, inherit the delay.`},
+    {type:'section', num:'3', kicker:'Lock the start', cat:'Design freeze', items:[`Formal. Signed. Dated.`], note:`A freeze is a commitment, not a suggestion.`},
+    {type:'section', num:'4', kicker:'Lock the start', cat:'Decision log', items:[`Every open decision — one owner, one deadline`], note:`An open decision is an open risk.`},
+    {type:'cta', title:`This is the <span class="hl">Governance Gateway.</span>`, sub:`Lock the start before work begins.`},
   ]},
-  P3: { title:'P3 · 25-Point Pre-Construction Check', slides:[
-    {type:'cover', kicker:'Week 1 decides Month 3', title:`The 25 checks I run <span class="hl">before</span> a single partition goes up.`, sub:`The ones nobody does are the ones that cost you. Save this.`},
+  P3: { title:'P3 · 25-Point Pre-Construction Checklist', slides:[
+    {type:'cover', kicker:'Before a single partition goes up', title:`The 25-Point <span class="hl">Pre-Construction Checklist</span>`, sub:`25 years to refine. 25 minutes to run. Save this.`},
     {type:'section', num:'A', kicker:'Group A', cat:'Approvals & Compliance', items:[`1. Government & building approvals in hand`,`2. Fire & safety plan signed off`,`3. Working-hours & building permissions cleared`,`4. Construction insurance active`,`5. Labour licences & worker records in order`]},
     {type:'section', num:'B', kicker:'Group B', cat:'Site Readiness', items:[`6. Site handover recorded with photos`,`7. Power, water & temporary services live`,`8. Material route & lift access agreed`,`9. Site office, storage & safety set up`,`10. Existing pipes & cables found and isolated`]},
     {type:'section', num:'C', kicker:'Group C', cat:'Drawings & Design', items:[`11. Final construction drawings released`,`12. Drawing list & version control live`,`13. All service drawings checked against each other`,`14. Ceiling plan checked against the real beam heights`,`15. Design freeze formally signed`]},
-    {type:'section', num:'D', kicker:'Group D', cat:'Vendors & Procurement', items:[`16. Orders placed against locked scope`,`17. Items that take weeks to arrive ordered early, tracker live`,`18. Who-does-what between vendors agreed`,`19. Sample approvals calendared`,`20. Mock-up schedule confirmed`]},
+    {type:'section', num:'D', kicker:'Group D', cat:'Vendors & Procurement', items:[`16. Orders placed against locked scope`,`17. Long-lead items ordered, tracker live`,`18. Who-does-what between vendors agreed`,`19. Sample approvals calendared`,`20. Mock-up schedule confirmed`]},
     {type:'section', num:'E', kicker:'Group E', cat:'Client Sign-offs', items:[`21. Who-approves-what list signed`,`22. Decision log opened, with owners & dates`,`23. Change process agreed in writing`,`24. Reporting format & meeting rhythm fixed`,`25. Handover requirements defined on day one`]},
-    {type:'statement', text:`Run it once on paper,<br><span class="hl">or chase it all year on site.</span>`},
-    {type:'statement', text:`A project doesn't run late because the site was slow.<br>It runs late because it <span class="hl">started before it was ready.</span>`},
+    {type:'statement', text:`25 boxes. 25 minutes.<br><span class="hl">A project that starts clean, runs clean.</span>`},
+    {type:'statement', text:`Most delays aren't built on site.<br>They're <span class="hl">built into the start.</span>`},
     {type:'cta', title:`Save this for your next fit-out.`, sub:`Follow Shravan C. Mudaliar for field-tested execution tools.`},
   ]},
   P5: { title:'P5 · The Hidden Cost of Delay', slides:[
     {type:'cover', kicker:'The line nobody budgets', title:`The most expensive line in your project <span class="hl">never shows up in the budget.</span>`, sub:`It's delay.`},
-    {type:'stat', label:`The sample · Mumbai fit-out  (figures illustrative)`, figure:`45 days`, sub:`A ₹15 cr, 60,000 sq ft office that slips by six weeks. Here's what those days actually cost.`},
+    {type:'stat', label:`The sample · Mumbai fit-out  (illustrative)`, figure:`45 days`, sub:`A ₹15 cr, 60,000 sq ft office that slips by six weeks. Here's what those days actually cost.`},
     {type:'stat', label:`01 · Rent you can't use yet`, figure:`₹1.35 Cr`, sub:`Paying for the new space while it sits empty, at ₹150/sq ft a month.`},
-    {type:'stat', label:`02 · Your old office, longer`, figure:`₹50–70 L`, sub:`Holding your current office past the deadline, typically at 120–150% rent.`},
-    {type:'stat', label:`03 · People & site`, figure:`₹20–30 L+`, sub:`Lost productivity and a second move, plus 2–3% of the project in idle site cost.`},
-    {type:'stat', label:`The total nobody budgeted`, figure:`₹2.5–3 Cr`, sub:`15–20% of the whole project. Invisible in the budget. Brutal on the P&L.`},
-    {type:'statement', text:`The Cost-of-Delay check:<br><span class="hl">(rent × months slipped) + old-office overlap + a second move + idle site cost.</span><br>A 45-day slip ≈ 15–20% of project value.`},
-    {type:'cta', title:`Make the date a <span class="hl">plan</span>, not a hope.`, sub:`The Schedule Risk Review — every approval and long-lead item mapped to a dated, owned timeline before work starts.`},
+    {type:'stat', label:`02 · Your old office, longer`, figure:`₹50–70 L`, sub:`Holding it past the lease, usually at 120–150% rent.`},
+    {type:'stat', label:`03 · People & site`, figure:`₹20–30 L+`, sub:`Lost productivity, a double move, plus 2–3% of project value in idle site cost.`},
+    {type:'stat', label:`The total nobody budgeted`, figure:`₹2.5–3 Cr`, sub:`15–20% of the whole project. Invisible in the budget. Visible in the year-end accounts.`},
+    {type:'cta', title:`The cheapest day of your project is the one that <span class="hl">happens on time.</span>`, sub:`Strong governance buys those 45 days back.`},
   ]},
 };
 
 /* ===== render ===== */
-const wm = (light)=>`<div class="wm"><div class="w1">maplecraft</div><div class="w2">INTERIORS</div></div>`;
-const foot = (i,n)=>`<div class="s-foot"><div class="tagline">EXECUTION EXCELLENCE. <b>DELIVERED.</b></div><div class="foot-r">${i+1} / ${n}</div></div>`;
+const wm = (light)=>`<div class="wm"><div class="w1">Shravan C. Mudaliar</div><div class="w2">CORPORATE INTERIOR EXECUTION</div></div>`;
+const foot = (i,n)=>`<div class="s-foot"><div class="tagline">PROJECT GOVERNANCE · <b>EXECUTION</b></div><div class="foot-r">${i+1} / ${n}</div></div>`;
 
 function renderSlide(s, i, n){
   const top = `<div class="s-top">${wm()}${MARK}</div>`;
