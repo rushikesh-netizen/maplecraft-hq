@@ -456,6 +456,46 @@
   .qlabel{font-size:9.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);margin:0 0 7px}
   /* carousel deck */
   #qvDeckWrap{margin-top:18px}
+  /* inline designed carousel cards — scaled designed slides, swipeable */
+  .cs-strip{display:flex;gap:14px;overflow-x:auto;padding:8px 2px 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .cs-card{flex:0 0 auto;width:340px;height:425px;border-radius:14px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.16);scroll-snap-align:center;background:#fff;border:1px solid var(--line)}
+  .cs-scale{width:1080px;height:1350px;transform:scale(.314815);transform-origin:top left;font-family:'Montserrat','Inter',sans-serif}
+  .cs-slide{width:1080px;height:1350px;display:flex;flex-direction:column;background:#fff;color:#232323}
+  .cs-slide.cover,.cs-slide.cta{background:var(--maroon);color:#fff}
+  .cs-top{display:flex;align-items:flex-start;justify-content:space-between;padding:48px 60px 0}
+  .cs-wm1{font-size:38px;font-weight:800;color:var(--crimson);line-height:1}
+  .cs-slide.cover .cs-wm1,.cs-slide.cta .cs-wm1{color:#fff}
+  .cs-wm2{font-size:13px;font-weight:700;letter-spacing:.2em;color:var(--grey);margin-top:7px}
+  .cs-slide.cover .cs-wm2,.cs-slide.cta .cs-wm2{color:rgba(255,255,255,.7)}
+  .cs-mark{width:58px;height:58px;border-radius:14px;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:21px;flex:0 0 auto}
+  .cs-body{flex:1;padding:40px 60px;display:flex;flex-direction:column;justify-content:center}
+  .cs-kick{font-size:24px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--yellow);margin-bottom:22px}
+  .cs-rule{width:104px;height:8px;background:var(--yellow);border-radius:4px;margin-bottom:30px}
+  .cs-title{font-size:74px;font-weight:800;line-height:1.05;letter-spacing:-.015em}
+  .cs-title .hl,.cs-ctitle .hl{color:var(--yellow)}
+  .cs-statement .hl{color:var(--crimson)}
+  .cs-sub{font-size:28px;font-weight:500;margin-top:28px;line-height:1.4;color:rgba(255,255,255,.85)}
+  .cs-slide:not(.cover):not(.cta) .cs-sub{color:#3a3a3a}
+  .cs-sechead{display:flex;align-items:center;gap:24px;margin-bottom:34px}
+  .cs-badge{width:90px;height:90px;border-radius:18px;background:var(--crimson);color:#fff;font-size:44px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .cs-cat{font-size:42px;font-weight:800;line-height:1.1}
+  .cs-cat small{display:block;font-size:18px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--crimson);margin-bottom:6px}
+  ul.cs-checks{list-style:none;display:flex;flex-direction:column;gap:18px;margin:0;padding:0}
+  ul.cs-checks li{display:flex;gap:18px;align-items:flex-start;font-size:30px;font-weight:500;color:#2c2c2c;line-height:1.3}
+  ul.cs-checks li::before{content:"✓";flex:0 0 auto;width:42px;height:42px;border-radius:9px;background:#fbe7eb;color:var(--crimson);font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .cs-note{margin-top:28px;font-size:28px;font-weight:700;font-style:italic;color:var(--crimson);line-height:1.3}
+  .cs-lbl{font-size:32px;font-weight:600;color:#6b6b6b;margin-bottom:14px;line-height:1.3}
+  .cs-fig{font-size:158px;font-weight:900;color:var(--crimson);line-height:.92;letter-spacing:-.02em}
+  .cs-statement{font-size:60px;font-weight:800;line-height:1.12;letter-spacing:-.01em}
+  .cs-ctitle{font-size:62px;font-weight:800;line-height:1.1}
+  .cs-csub{font-size:30px;font-weight:500;margin-top:26px;color:rgba(255,255,255,.85);line-height:1.4}
+  .cs-person{margin-top:44px;padding-top:26px;border-top:2px solid rgba(255,255,255,.25)}
+  .cs-person .nm{font-size:32px;font-weight:800}
+  .cs-person .rl{font-size:20px;color:rgba(255,255,255,.72);margin-top:6px;line-height:1.3}
+  .cs-foot{display:flex;align-items:center;justify-content:space-between;padding:0 60px 46px;font-size:15px;font-weight:800}
+  .cs-foot .tg{color:var(--crimson);letter-spacing:.12em}
+  .cs-slide.cover .cs-foot .tg,.cs-slide.cta .cs-foot .tg{color:var(--yellow)}
+  .cs-foot .pg{color:var(--grey)}
   .qdeck{display:grid;gap:9px}
   .slide{display:flex;gap:11px;align-items:flex-start;background:rgba(255,255,255,.55);border:1px solid var(--line);border-radius:12px;padding:11px 13px;box-shadow:var(--shadow-sm)}
   .slide .sn{flex:0 0 auto;font-size:9px;font-weight:800;letter-spacing:.04em;color:#fff;background:linear-gradient(135deg,var(--crimson),var(--maroon));padding:4px 8px;border-radius:7px;margin-top:1px;white-space:nowrap}
@@ -679,9 +719,9 @@
     <div class="qver" id="qvVer"></div>
     <div class="qlabel" id="qvCapLabel">Caption</div>
     <div class="cap" id="qvCap"></div>
-    <div id="qvCarouselFrameWrap" style="display:none">
+    <div id="qvCardsWrap" style="display:none">
       <div class="qlabel">Designed carousel — swipe →<a id="qvCarousel" target="_blank" rel="noopener" style="float:right;font-weight:700;color:var(--crimson);text-decoration:none;font-size:11px">⤢ full screen · PDF ↗</a></div>
-      <iframe id="qvCarouselFrame" title="Designed carousel" style="width:100%;height:66vh;border:1px solid var(--line);border-radius:12px;background:#ededed;display:block"></iframe>
+      <div id="qvCards" class="cs-strip"></div>
     </div>
     <div id="qvDeckWrap"><div class="qlabel">Carousel deck</div><div class="qdeck" id="qvDeck"></div></div>
     <div class="qnote" id="qvNote"></div>
@@ -698,9 +738,9 @@ const DATA = {
 
   scopes:[
     {id:'A', name:'Scope A — Shravan · Personal LinkedIn', win:'May 26 → Apr 27', start:0, len:12, status:'amber', statusLabel:'Live · Amber', work:14, time:10,
-     note:'Profile freeze pending — it anchors P1 on Jun 15. Copy for all 15 posts is finalised.',
+     note:'Profile freeze pending — it anchors P1 (now Mon Jul 6). Copy for all 15 posts is finalised.',
      done:['Profile copy v2 — headline, About, Featured, Skills, banner brief','15-post pipeline: copy finalised end-to-end','Revision 2 — all 5 of your comments incorporated','Jun 12: LinkedIn access received · figures verified (2.5M+ sq ft · 350+ projects)'],
-     next:['P1 rewritten to new voice — approve before Mon','P2–P4 in new voice → Wednesday batch (Jun 17)','Freeze profile (DL-01)']},
+     next:['P1–P5 finalised — Shravan sign-off','Collect site photo (P1) + headshot (P4)','First post Mon Jul 6']},
     {id:'D', name:'Scope D — OFFISTORY · Brand Identity', win:'May 26 → Jun 26', start:0, len:2, status:'amber', statusLabel:'Live · Amber', work:55, time:70,
      note:'Direction reset at Review #1 — infinity brief retired; fresh concepts requested, business cards included.',
      done:['3 logo rounds explored (infinity/S/8) — retired by client','Brief sharpened: corporate, serious, trust'],
@@ -717,21 +757,21 @@ const DATA = {
 
   /* gates: 1=Copy 2=Design 3=Review 4=Scheduled 5=Live · done = gates completed, cur = gate in progress (0 = none) */
   pipeline:[
-    {p:'P1', ref:'W1',  date:'Jun 15', pillar:'Site Wisdom', title:'3 errors in 10 minutes',                 fmt:'Text + image',    done:1, cur:2, stage:'v4 · in design'},
-    {p:'P2', ref:'W2',  date:'Jun 22', pillar:'Governance',  title:'The Governance Gateway',                 fmt:'Carousel ×7',     done:1, cur:3, stage:'v1 · to client'},
-    {p:'P3', ref:'W5',  date:'Jun 29', pillar:'Checklists',  title:'25-Point Pre-Construction Checklist',    fmt:'Carousel ×10',    done:1, cur:3, stage:'v1 · to client'},
-    {p:'P4', ref:'W8',  date:'Jul 6',  pillar:'Leadership',  title:'25 years — the honest lessons',          fmt:'Text + photo',    done:1, cur:3, stage:'v1 · to client'},
-    {p:'P5', ref:'W9',  date:'Jul 13', pillar:'Cost',        title:'The hidden cost of delay',               fmt:'Carousel ×7',     done:1, cur:3, stage:'v1 · to client'},
-    {p:'P6', ref:'W10', date:'Jul 20', pillar:'Client Ed',   title:'10 questions before you appoint',        fmt:'Carousel ×12',    done:1, cur:0, stage:'Copy final'},
-    {p:'P7', ref:'W12', date:'Jul 27', pillar:'Site Wisdom', title:'Scope creep cost ₹40 lakhs',             fmt:'Text + image',    done:1, cur:0, stage:'Copy final'},
-    {p:'P8', ref:'W19', date:'Aug 3',  pillar:'Checklists',  title:'The handover pack you deserve',          fmt:'Carousel ×10',    done:1, cur:0, stage:'Copy final'},
-    {p:'P9', ref:'W20', date:'Aug 10', pillar:'Client Ed',   title:'Your ₹20-crore asset',                   fmt:'Text + graphic',  done:1, cur:0, stage:'Copy final'},
-    {p:'P10',ref:'W21', date:'Aug 17', pillar:'Cost',        title:'The mid-project turnaround',             fmt:'Long-form text',  done:1, cur:0, stage:'Copy final'},
-    {p:'P11',ref:'W22', date:'Aug 24', pillar:'Governance',  title:'The 5 Pillars',                          fmt:'Carousel ×7',     done:1, cur:0, stage:'Copy final'},
-    {p:'P12',ref:'W36', date:'Aug 31', pillar:'Cost',        title:'Governance ROI — the math',              fmt:'Carousel ×8',     done:1, cur:0, stage:'Copy final'},
-    {p:'P13',ref:'W41', date:'Sep 7',  pillar:'Site Wisdom', title:'Anatomy of a failed handover',           fmt:'Text + checklist',done:1, cur:0, stage:'Copy final'},
-    {p:'P14',ref:'W46', date:'Sep 14', pillar:'Trends',      title:'The office of 2030',                     fmt:'Text + visual',   done:1, cur:0, stage:'Copy final'},
-    {p:'P15',ref:'W49', date:'Sep 21', pillar:'Governance',  title:'Top 10 Governance Principles — capstone',fmt:'Carousel ×12',    done:1, cur:0, stage:'Copy final'}
+    {p:'P1', ref:'W1',  date:'Jul 6',  pillar:'Site Wisdom', title:'3 errors in 10 minutes',                 fmt:'Text + image',    done:1, cur:2, stage:'v6 · needs photo'},
+    {p:'P2', ref:'W2',  date:'Jul 13', pillar:'Governance',  title:'The Governance Gateway',                 fmt:'Carousel ×7',     done:2, cur:3, stage:'v3 · carousel ready'},
+    {p:'P3', ref:'W5',  date:'Jul 20', pillar:'Checklists',  title:'25-Point Pre-Construction Checklist',    fmt:'Carousel ×9',     done:2, cur:3, stage:'v3 · carousel ready'},
+    {p:'P4', ref:'W8',  date:'Jul 27', pillar:'Leadership',  title:'25 years — the honest lessons',          fmt:'Text + photo',    done:1, cur:2, stage:'v3 · needs photo'},
+    {p:'P5', ref:'W9',  date:'Aug 3',  pillar:'Cost',        title:'The hidden cost of delay',               fmt:'Carousel ×7',     done:2, cur:3, stage:'v3 · carousel ready'},
+    {p:'P6', ref:'W10', date:'Aug 10', pillar:'Client Ed',   title:'10 questions before you appoint',        fmt:'Carousel ×12',    done:1, cur:0, stage:'Copy final'},
+    {p:'P7', ref:'W12', date:'Aug 17', pillar:'Site Wisdom', title:'Scope creep cost ₹40 lakhs',             fmt:'Text + image',    done:1, cur:0, stage:'Copy final'},
+    {p:'P8', ref:'W19', date:'Aug 24', pillar:'Checklists',  title:'The handover pack you deserve',          fmt:'Carousel ×10',    done:1, cur:0, stage:'Copy final'},
+    {p:'P9', ref:'W20', date:'Aug 31', pillar:'Client Ed',   title:'Your ₹20-crore asset',                   fmt:'Text + graphic',  done:1, cur:0, stage:'Copy final'},
+    {p:'P10',ref:'W21', date:'Sep 7',  pillar:'Cost',        title:'The mid-project turnaround',             fmt:'Long-form text',  done:1, cur:0, stage:'Copy final'},
+    {p:'P11',ref:'W22', date:'Sep 14', pillar:'Governance',  title:'The 5 Pillars',                          fmt:'Carousel ×7',     done:1, cur:0, stage:'Copy final'},
+    {p:'P12',ref:'W36', date:'Sep 21', pillar:'Cost',        title:'Governance ROI — the math',              fmt:'Carousel ×8',     done:1, cur:0, stage:'Copy final'},
+    {p:'P13',ref:'W41', date:'Sep 28', pillar:'Site Wisdom', title:'Anatomy of a failed handover',           fmt:'Text + checklist',done:1, cur:0, stage:'Copy final'},
+    {p:'P14',ref:'W46', date:'Oct 5',  pillar:'Trends',      title:'The office of 2030',                     fmt:'Text + visual',   done:1, cur:0, stage:'Copy final'},
+    {p:'P15',ref:'W49', date:'Oct 12', pillar:'Governance',  title:'Top 10 Governance Principles — capstone',fmt:'Carousel ×12',    done:1, cur:0, stage:'Copy final'}
   ],
   lean:[
     {p:'L1', title:'The 8 wastes of corporate fit-out projects', fmt:'Carousel ×9', stage:'Proposed — awaiting shortlist (DL-03)'},
@@ -742,7 +782,7 @@ const DATA = {
   quickViews:{
     P1:{
       title:'P1 · 3 problems in the first 10 minutes',
-      meta:'Mon Jun 15 · Site Wisdom · Text + image · current: v6 (clean draft · preferred)',
+      meta:'Mon Jul 6 · Site Wisdom · Text + image · current: v6 (clean draft · preferred)',
       versions:[
         {v:'v3', date:'12 Jun', status:'Approved · Review #1'},
         {v:'v4', date:'16 Jun', status:'Proposed refinement'},
@@ -783,7 +823,7 @@ Small checks. Massive impact.
 
     P2:{
       title:'P2 · The Governance Gateway',
-      meta:'Mon Jun 22 · Governance · Carousel (7 slides) · current: v3 (clean draft · preferred)',
+      meta:'Mon Jul 13 · Governance · Carousel (7 slides) · current: v3 (clean draft · preferred)',
       versions:[
         {v:'v1', date:'16 Jun', status:'First draft · to client Wed Jun 17'},
         {v:'v2', date:'26 Jun', status:'Reconciled voice — rolled back'},
@@ -829,7 +869,7 @@ Small checks upfront. Massive savings later.
 
     P3:{
       title:'P3 · 25-Point Pre-Construction Checklist',
-      meta:'Mon Jun 29 · Checklists · Carousel (9 slides) · current: v3 (clean draft · preferred)',
+      meta:'Mon Jul 20 · Checklists · Carousel (9 slides) · current: v3 (clean draft · preferred)',
       versions:[
         {v:'v1', date:'16 Jun', status:'First draft · to client Wed Jun 17'},
         {v:'v2', date:'26 Jun', status:'Reconciled voice — rolled back'},
@@ -877,7 +917,7 @@ Small checks. Massive impact.
 
     P4:{
       title:'P4 · 25 years — the honest lessons',
-      meta:'Mon Jul 6 · Leadership · Text + photo · current: v3 (clean draft · preferred)',
+      meta:'Mon Jul 27 · Leadership · Text + photo · current: v3 (clean draft · preferred)',
       versions:[
         {v:'v1', date:'16 Jun', status:'First draft · to client Wed Jun 17'},
         {v:'v2', date:'26 Jun', status:'Reconciled voice — rolled back'},
@@ -912,7 +952,7 @@ And one I learned the hard way: early on, I sent an out-of-date drawing to site.
 
     P5:{
       title:'P5 · The hidden cost of delay',
-      meta:'Mon Jul 13 · Cost · Infographic carousel (7 slides) · current: v3 (clean draft · preferred)',
+      meta:'Mon Aug 3 · Cost · Infographic carousel (7 slides) · current: v3 (clean draft · preferred)',
       versions:[
         {v:'v1', date:'16 Jun', status:'First draft · to client Wed Jun 17'},
         {v:'v2', date:'26 Jun', status:'Reconciled voice — rolled back'},
@@ -996,11 +1036,11 @@ Small checks upfront. Massive savings at the end.
   ],
 
   week:[
-    '<b>Fri Jun 12</b> — Review #1 done ✓ · voice feedback received: professional, simple English, honest, story-first',
-    '<b>Sat Jun 13</b> — P1 revised to the new voice → your quick approval on WhatsApp · profile freeze (DL-01)',
-    '<b>Mon Jun 15, 9:00 IST</b> — P1 goes live (on approval) · 15-min first-hour together',
-    '<b>Wed Jun 17</b> — First Wednesday batch: P2–P4 in the new voice + refined OFFISTORY logo set',
-    '<b>Fri Jun 19, 11:30</b> — Batch review: 4 posts + logo direction (DL-02)'
+    '<b>Now · late Jun</b> — P1–P5 finalised in the clean voice; carousels designed (P2/P3/P5). Awaiting Shravan sign-off',
+    '<b>Wk of Jun 30</b> — Lock P1–P5 with Shravan · collect the helmet + safety-jacket site photo (P1) and a headshot (P4)',
+    '<b>Mon Jul 6, 9:00 IST</b> — P1 goes live · 15-min first-hour engagement together',
+    '<b>Mon Jul 13</b> — P2 (Governance Gateway carousel) live · then weekly Mondays',
+    '<b>Jul 20 → Oct 12</b> — P3…P15 publish weekly (P3 Jul 20 · P4 Jul 27 · P5 Aug 3 · capstone P15 Oct 12)'
   ],
 
   meetings:[
@@ -1241,6 +1281,51 @@ document.getElementById('viewCal').innerHTML = Object.entries(CAL_MONTHS).map(([
 }).join('');
 
 /* ---------- quick view modal ---------- */
+/* ---------- designed carousel cards (rendered inline in the modal) ---------- */
+const CDECKS = {
+  P2:[
+    {type:'cover', kicker:'The Pre-Start Window', title:`Most office projects don't fail during construction.<br>They fail <span class="hl">3 weeks before</span> it begins.`, sub:`The quiet window between signing the contract and the first worker reaching site.`},
+    {type:'statement', text:`THE PRE-START WINDOW —<br><span class="hl">the weeks that decide whether the project runs on rails or on luck.</span>`},
+    {type:'section', num:'1', kicker:'Lock the start', cat:'Who approves what', items:[`Every decision — its owner`,`Its spending limit`,`How many days it can sit`], note:`Slow decisions quietly kill schedules.`},
+    {type:'section', num:'2', kicker:'Lock the start', cat:'Order-by dates', items:[`Every long-lead item mapped to an order date`,`Glass, AC units, imported finishes first`], note:`Miss the date, inherit the delay.`},
+    {type:'section', num:'3', kicker:'Lock the start', cat:'Design freeze', items:[`Formal. Signed. Dated.`], note:`A freeze is a commitment, not a suggestion.`},
+    {type:'section', num:'4', kicker:'Lock the start', cat:'Decision log', items:[`Every open decision — one owner, one deadline`], note:`An open decision is an open risk.`},
+    {type:'cta', title:`This is the <span class="hl">Governance Gateway.</span>`, sub:`Lock the start before work begins.`},
+  ],
+  P3:[
+    {type:'cover', kicker:'Before a single partition goes up', title:`The 25-Point <span class="hl">Pre-Construction Checklist</span>`, sub:`25 years to refine. 25 minutes to run. Save this.`},
+    {type:'section', num:'A', kicker:'Group A', cat:'Approvals & Compliance', items:[`1. Government & building approvals in hand`,`2. Fire & safety plan signed off`,`3. Working-hours & building permissions cleared`,`4. Construction insurance active`,`5. Labour licences & worker records in order`]},
+    {type:'section', num:'B', kicker:'Group B', cat:'Site Readiness', items:[`6. Site handover recorded with photos`,`7. Power, water & temporary services live`,`8. Material route & lift access agreed`,`9. Site office, storage & safety set up`,`10. Existing pipes & cables found and isolated`]},
+    {type:'section', num:'C', kicker:'Group C', cat:'Drawings & Design', items:[`11. Final construction drawings released`,`12. Drawing list & version control live`,`13. All service drawings checked against each other`,`14. Ceiling plan checked against the real beam heights`,`15. Design freeze formally signed`]},
+    {type:'section', num:'D', kicker:'Group D', cat:'Vendors & Procurement', items:[`16. Orders placed against locked scope`,`17. Long-lead items ordered, tracker live`,`18. Who-does-what between vendors agreed`,`19. Sample approvals calendared`,`20. Mock-up schedule confirmed`]},
+    {type:'section', num:'E', kicker:'Group E', cat:'Client Sign-offs', items:[`21. Who-approves-what list signed`,`22. Decision log opened, with owners & dates`,`23. Change process agreed in writing`,`24. Reporting format & meeting rhythm fixed`,`25. Handover requirements defined on day one`]},
+    {type:'statement', text:`25 boxes. 25 minutes.<br><span class="hl">A project that starts clean, runs clean.</span>`},
+    {type:'statement', text:`Most delays aren't built on site.<br>They're <span class="hl">built into the start.</span>`},
+    {type:'cta', title:`Save this for your next fit-out.`, sub:`Follow Shravan C. Mudaliar for field-tested execution tools.`},
+  ],
+  P5:[
+    {type:'cover', kicker:'The line nobody budgets', title:`The most expensive line in your project <span class="hl">never shows up in the budget.</span>`, sub:`It's delay.`},
+    {type:'stat', label:`The sample · Mumbai fit-out  (illustrative)`, figure:`45 days`, sub:`A ₹15 cr, 60,000 sq ft office that slips by six weeks. Here's what those days actually cost.`},
+    {type:'stat', label:`01 · Rent you can't use yet`, figure:`₹1.35 Cr`, sub:`Paying for the new space while it sits empty, at ₹150/sq ft a month.`},
+    {type:'stat', label:`02 · Your old office, longer`, figure:`₹50–70 L`, sub:`Holding it past the lease, usually at 120–150% rent.`},
+    {type:'stat', label:`03 · People & site`, figure:`₹20–30 L+`, sub:`Lost productivity, a double move, plus 2–3% of project value in idle site cost.`},
+    {type:'stat', label:`The total nobody budgeted`, figure:`₹2.5–3 Cr`, sub:`15–20% of the whole project. Invisible in the budget. Visible in the year-end accounts.`},
+    {type:'cta', title:`The cheapest day of your project is the one that <span class="hl">happens on time.</span>`, sub:`Strong governance buys those 45 days back.`},
+  ],
+};
+const CS_WM = `<div><div class="cs-wm1">Shravan C. Mudaliar</div><div class="cs-wm2">CORPORATE INTERIOR EXECUTION</div></div>`;
+const csFoot = (i,n) => `<div class="cs-foot"><div class="tg">PROJECT GOVERNANCE · EXECUTION</div><div class="pg">${i+1} / ${n}</div></div>`;
+const csTop = mark => `<div class="cs-top">${CS_WM}${mark?'<div class="cs-mark">SM</div>':'<div></div>'}</div>`;
+function renderCard(s,i,n){
+  if(s.type==='cover') return `<div class="cs-card"><div class="cs-scale"><div class="cs-slide cover">${csTop(0)}<div class="cs-body">${s.kicker?`<div class="cs-kick">${s.kicker}</div>`:''}<div class="cs-rule"></div><div class="cs-title">${s.title}</div>${s.sub?`<div class="cs-sub">${s.sub}</div>`:''}</div>${csFoot(i,n)}</div></div></div>`;
+  if(s.type==='section') return `<div class="cs-card"><div class="cs-scale"><div class="cs-slide">${csTop(1)}<div class="cs-body"><div class="cs-sechead"><div class="cs-badge">${s.num}</div><div class="cs-cat">${s.kicker?`<small>${s.kicker}</small>`:''}${s.cat}</div></div><ul class="cs-checks">${(s.items||[]).map(it=>`<li>${it}</li>`).join('')}</ul>${s.note?`<div class="cs-note">${s.note}</div>`:''}</div>${csFoot(i,n)}</div></div></div>`;
+  if(s.type==='stat') return `<div class="cs-card"><div class="cs-scale"><div class="cs-slide">${csTop(1)}<div class="cs-body">${s.label?`<div class="cs-lbl">${s.label}</div>`:''}<div class="cs-fig">${s.figure}</div>${s.sub?`<div class="cs-sub">${s.sub}</div>`:''}</div>${csFoot(i,n)}</div></div></div>`;
+  if(s.type==='statement') return `<div class="cs-card"><div class="cs-scale"><div class="cs-slide">${csTop(1)}<div class="cs-body"><div class="cs-statement">${s.text}</div></div>${csFoot(i,n)}</div></div></div>`;
+  if(s.type==='cta') return `<div class="cs-card"><div class="cs-scale"><div class="cs-slide cta">${csTop(0)}<div class="cs-body"><div class="cs-ctitle">${s.title}</div>${s.sub?`<div class="cs-csub">${s.sub}</div>`:''}<div class="cs-person"><div class="nm">Shravan C. Mudaliar</div><div class="rl">Corporate Interior Execution · 25 years · 2.5M+ sq ft · 350+ projects</div></div></div>${csFoot(i,n)}</div></div></div>`;
+  return '';
+}
+const renderCards = key => { const d=CDECKS[key]; return d?d.map((s,i)=>renderCard(s,i,d.length)).join(''):''; };
+
 function openQV(p){
   const q = DATA.quickViews[p];
   if (!q) return;
@@ -1262,19 +1347,18 @@ function openQV(p){
     ).join('');
     dWrap.style.display = 'block';
   } else { dWrap.style.display = 'none'; }
-  // designed carousel — rendered inline in an iframe (primary view; replaces the text deck for carousel posts)
-  const cFrameWrap = document.getElementById('qvCarouselFrameWrap');
-  const cFrame = document.getElementById('qvCarouselFrame');
+  // designed carousel — native cards rendered inline (primary view; replaces the text deck for carousel posts)
+  const cWrap = document.getElementById('qvCardsWrap');
   const cA = document.getElementById('qvCarousel');
-  if (q.carousel){
-    const src = q.carousel + (q.carousel.includes('?') ? '&' : '?') + 'embed=1';
-    if (cFrame.getAttribute('src') !== src) cFrame.setAttribute('src', src);
+  if (q.carousel && CDECKS[p]){
+    const strip = document.getElementById('qvCards');
+    strip.innerHTML = renderCards(p);
+    strip.scrollLeft = 0;
     cA.href = q.carousel;
-    cFrameWrap.style.display = 'block';
+    cWrap.style.display = 'block';
     dWrap.style.display = 'none';
   } else {
-    cFrameWrap.style.display = 'none';
-    cFrame.removeAttribute('src');
+    cWrap.style.display = 'none';
   }
   // note
   document.getElementById('qvNote').textContent = q.note || '';
