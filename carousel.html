@@ -148,7 +148,7 @@ const DECKS = {
     {type:'section', num:'2', kicker:'Lock the start', cat:'Order-by dates', items:[`Every long-lead item mapped to an order date`,`Glass, AC units, imported finishes first`], note:`Miss the date, inherit the delay.`},
     {type:'section', num:'3', kicker:'Lock the start', cat:'Design freeze', items:[`Formal. Signed. Dated.`], note:`A freeze is a commitment, not a suggestion.`},
     {type:'section', num:'4', kicker:'Lock the start', cat:'Decision log', items:[`Every open decision — one owner, one deadline`], note:`An open decision is an open risk.`},
-    {type:'cta', title:`This is the <span class="hl">Governance Gateway.</span>`, sub:`Lock the start before work begins.`},
+    {type:'cta', title:`This is the <span class="hl">Governance Gateway.</span>`, sub:`Lock the start — and the project springs far fewer surprises later.`},
   ]},
   P3: { title:'P3 · 25-Point Pre-Construction Checklist', slides:[
     {type:'cover', kicker:'Before a single partition goes up', title:`The 25-Point <span class="hl">Pre-Construction Checklist</span>`, sub:`25 years to refine. 25 minutes to run. Save this.`},
@@ -162,15 +162,21 @@ const DECKS = {
     {type:'cta', title:`Save this for your next fit-out.`, sub:`Follow Shravan C. Mudaliar for field-tested execution tools.`},
   ]},
   P5: { title:'P5 · The Hidden Cost of Delay', slides:[
-    {type:'cover', kicker:'The line nobody budgets', title:`The most expensive line in your project <span class="hl">never shows up in the budget.</span>`, sub:`It's delay.`},
-    {type:'stat', label:`The sample · Mumbai fit-out  (illustrative)`, figure:`45 days`, sub:`A ₹15 cr, 60,000 sq ft office that slips by six weeks. Here's what those days actually cost.`},
+    {type:'cover', kicker:`The most expensive line item in your fit-out isn't on your BOQ`, title:`<span style="font-size:1.25em;display:inline-block;line-height:1.0">IT'S <span class="hl">DELAY.</span></span>`, sub:`A 45-day slip on a ₹15 cr, 60,000 sq ft Mumbai fit-out. (Illustrative.)`},
+    {type:'stat', label:`The sample · Mumbai fit-out  (illustrative)`, figure:`<span style="font-size:.6em;line-height:1.02;display:inline-block">45 DAYS<br>OF DELAY</span>`, sub:`A ₹15 cr, 60,000 sq ft office that slips by six weeks. Here's what those days actually cost.`},
     {type:'stat', label:`01 · Rent you can't use yet`, figure:`₹1.35 Cr`, sub:`Paying for the new space while it sits empty, at ₹150/sq ft a month.`},
     {type:'stat', label:`02 · Your old office, longer`, figure:`₹50–70 L`, sub:`Holding it past the lease, usually at 120–150% rent.`},
     {type:'stat', label:`03 · People & site`, figure:`₹20–30 L+`, sub:`Lost productivity, a double move, plus 2–3% of project value in idle site cost.`},
-    {type:'stat', label:`The total nobody budgeted`, figure:`₹2.5–3 Cr`, sub:`15–20% of the whole project. Invisible in the budget. Visible in the year-end accounts.`},
-    {type:'cta', title:`The cheapest day of your project is the one that <span class="hl">happens on time.</span>`, sub:`Strong governance buys those 45 days back.`},
+    {type:'stat', label:`THE HIDDEN COST OF DELAY`, figure:`₹2.5–3 Cr`, sub:`15–20% of the whole project. Invisible on the BOQ. Visible in the year-end accounts.`},
+    {type:'cta', title:`The cheapest day of your project is the one that <span class="hl">happens on time.</span>`, sub:`Small decisions made early prevent expensive decisions later.`},
   ]},
 };
+
+/* Studio draft deck (written by studio.html) — renders like any other deck */
+try {
+  const draft = localStorage.getItem('studioDraftDeck');
+  if (draft) DECKS.DRAFT = { title: 'Studio · draft carousel', slides: JSON.parse(draft) };
+} catch (e) { /* ignore bad drafts */ }
 
 /* ===== render ===== */
 const wm = (light)=>`<div class="wm"><div class="w1">Shravan C. Mudaliar</div><div class="w2">CORPORATE INTERIOR EXECUTION</div></div>`;
