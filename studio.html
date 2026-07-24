@@ -143,17 +143,8 @@ const TITLES = [
  ['Why data-driven project delivery is the future','Execution Excellence'],
  ['My journey from site engineer to project delivery leader','Leadership'],
 ];
-/* 15-week publishing plan (Mondays). Titles null = open slot for the studio. */
-const PLAN = [
- ['2026-07-06','3 problems in the first 10 minutes'],
- ['2026-07-13','The Governance Gateway'],
- ['2026-07-20','25-Point Pre-Construction Checklist'],
- ['2026-07-27','25 years — the honest lessons'],
- ['2026-08-03','The hidden cost of delay'],
- ['2026-08-10',null],['2026-08-17',null],['2026-08-24',null],['2026-08-31',null],
- ['2026-09-07',null],['2026-09-14',null],['2026-09-21',null],['2026-09-28',null],
- ['2026-10-05',null],['2026-10-12',null],
-];
+/* Rolling Monday slots — blank slate: nothing is "published" unless it was actually scheduled here. */
+const SLOT_COUNT = 15;   // 2 recent Mondays + ~3 months ahead
 let fmt='text', topic='', variants=[], chosen=null, filter='all';
 const ls=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
 const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -207,25 +198,41 @@ async function refreshIdeas(){
  b.disabled=false;b.textContent='↻ Fresh ideas';
 }
 
-/* ---- calendar ---- */
+/* ---- calendar (blank slate: only real scheduling activity shows) ---- */
 function todayISO(){const d=new Date(Date.now()+5.5*3600e3);return d.toISOString().slice(0,10);}
+function mondays(){
+ // window: 2 Mondays back through ~3 months ahead
+ const now=new Date(Date.now()+5.5*3600e3);
+ const d=new Date(now); d.setUTCDate(d.getUTCDate()+((8-d.getUTCDay())%7||7)-21);
+ return Array.from({length:SLOT_COUNT},(_,i)=>{
+  const m=new Date(d); m.setUTCDate(m.getUTCDate()+i*7); return m.toISOString().slice(0,10);});
+}
+function firstFreeMondayISO(){
+ const cal=ls('studioCal',{}); let d=nextMondayISO();
+ for(let i=0;i<52;i++){ if(!cal[d]) return d;
+  const n=new Date(d+'T00:00:00Z'); n.setUTCDate(n.getUTCDate()+7); d=n.toISOString().slice(0,10);}
+ return d;
+}
 function renderCal(){
  const cal=ls('studioCal',{}), today=todayISO();
- document.getElementById('cal').innerHTML=PLAN.map(([d,t],idx)=>{
+ document.getElementById('cal').innerHTML=mondays().map((d,idx)=>{
   const sched=cal[d]; const past=d<today;
-  const title=sched?sched.topic:(t||'Open slot — pick from the idea bank');
+  const title=sched?sched.topic:'Open slot — pick from the idea bank';
   let st,cls;
-  if(past&&(t||sched)){st='✓ Published';cls='pub';}
+  if(sched&&past){st='✓ Done';cls='pub';}
   else if(sched){st='✅ Scheduled';cls='sched';}
-  else if(t){st='📋 Planned';cls='plan';}
+  else if(past){st='· Skipped';cls='open';}
   else{st='◻ Open';cls='open';}
   return `<div class="slot ${past?'past':''}">
-    <div class="d">MON ${d.slice(8,10)}/${d.slice(5,7)} · P${String(idx+1).padStart(2,'0')}</div>
-    <div class="t ${(!t&&!sched)?'open':''}">${esc(title)}</div>
+    <div class="d">MON ${d.slice(8,10)}/${d.slice(5,7)}</div>
+    <div class="t ${sched?'':'open'}">${esc(title)}</div>
     <span class="st ${cls}">${st}</span></div>`;
- }).join('');
- const next=PLAN.find(([d])=>d>=today);
- document.getElementById('nextchip').textContent=next?`NEXT POST · MON ${next[0].slice(8,10)}/${next[0].slice(5,7)} · 11:00 IST`:'SERIES COMPLETE';
+ }).join('')+
+ `<div class="slot" style="display:flex;align-items:center;justify-content:center">
+   <button class="pill" onclick="if(confirm('Clear every scheduled entry from the calendar?')){localStorage.removeItem('studioCal');renderCal();}">⟲ Reset calendar</button></div>`;
+ const nm=nextMondayISO();
+ document.getElementById('nextchip').textContent=
+  `NEXT POST · MON ${nm.slice(8,10)}/${nm.slice(5,7)} · 11:00 IST${cal[nm]?' · SCHEDULED ✓':''}`;
 }
 
 /* ---- topic workspace: stored variations + controlled generation ---- */
@@ -279,12 +286,6 @@ function choose(i){
   if(chosen.deck) localStorage.setItem('studioDraftDeck',JSON.stringify(chosen.deck));
   renderApprove();
 }
-function nextMonday11IST(){
-  // ponytail: computed in IST regardless of viewer timezone
-  const now=new Date(Date.now()+5.5*3600e3);
-  const d=new Date(now); d.setUTCDate(d.getUTCDate()+((8-d.getUTCDay())%7||7));
-  return d.toISOString().slice(0,10)+' · 11:00 AM IST (Monday)';
-}
 function nextMondayISO(){
   const now=new Date(Date.now()+5.5*3600e3);
   const d=new Date(now); d.setUTCDate(d.getUTCDate()+((8-d.getUTCDay())%7||7));
@@ -301,7 +302,7 @@ function renderApprove(){
     <div class="note">PDF for LinkedIn: open <a href="carousel.html?post=DRAFT" target="_blank">full view</a> → "Save as PDF". (Slide text comes from the generation — to change slides, edit here for the caption and ⚡ regenerate for a new deck.)</div>`:''}
    <div class="rowb">
     <button class="btn gold" onclick="navigator.clipboard.writeText(chosen.caption).then(()=>this.textContent='✓ Copied')">Copy caption</button>
-    <button class="btn" onclick="schedule()">Schedule → ${nextMonday11IST()}</button>
+    <button class="btn" onclick="schedule()">Schedule → Mon ${firstFreeMondayISO().slice(8,10)}/${firstFreeMondayISO().slice(5,7)} · 11:00 IST</button>
     <button class="btn alt" onclick="renderTopic()">← Back to variations</button>
    </div><div class="note" id="schednote"></div>`;
   const box=document.getElementById('editbox');
@@ -312,10 +313,10 @@ function renderApprove(){
 }
 function schedule(){
   navigator.clipboard.writeText(chosen.caption);
-  const d=nextMondayISO(), cal=ls('studioCal',{});
+  const d=firstFreeMondayISO(), cal=ls('studioCal',{});   // first Monday without a post — never overwrites
   cal[d]={topic,at:new Date().toISOString()}; save('studioCal',cal); renderCal();
   document.getElementById('schednote').innerHTML=
-   `Caption copied and the <b>${d}</b> calendar slot is marked. In Buffer (opening now): paste the caption, attach the carousel PDF if any, and set <b>${nextMonday11IST()}</b>.`;
+   `Caption copied and the <b>Mon ${d.slice(8,10)}/${d.slice(5,7)}</b> slot is marked on the calendar. In Buffer (opening now): paste the caption, attach the carousel PDF if any, and set <b>${d} · 11:00 AM IST</b>.`;
   window.open('https://publish.buffer.com','_blank');
 }
 
