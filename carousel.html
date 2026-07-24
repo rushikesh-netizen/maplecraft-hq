@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex"/>
 <title>Shravan C. Mudaliar — LinkedIn Carousels</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;0,900&family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
   :root{
     --crimson:#B41D3E; --maroon:#901732; --yellow:#FEC917; --grey:#989898;
@@ -41,24 +41,37 @@
   .wm{display:flex; flex-direction:column; line-height:1}
   .wm .w1{font-size:34px; font-weight:800; color:var(--crimson); letter-spacing:-.01em}
   .wm .w1 span{color:var(--ink)} /* not used; keeps option open */
-  .wm .w2{font-size:12px; font-weight:700; letter-spacing:.22em; color:var(--grey); margin-top:6px; padding-left:2px}
+  .wm .w2{font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:600; letter-spacing:.22em; color:var(--grey); margin-top:6px; padding-left:2px}
   .s-top .mark{width:54px; height:54px; flex:0 0 auto}
-  .pageno{font-size:15px; font-weight:800; color:var(--grey)}
+  .pageno{font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; letter-spacing:.1em; color:var(--grey)}
+
+  /* type roles: Archivo Black = hero layer · IBM Plex Mono = technical/drawing layer · Montserrat = body */
+  .hero-face{font-family:'Archivo Black',sans-serif; font-weight:400}
+  .tech-face{font-family:'IBM Plex Mono',monospace}
 
   /* body */
   .s-body{flex:1; padding:34px 56px 0; display:flex; flex-direction:column; justify-content:center}
-  .s-foot{display:flex; align-items:center; justify-content:space-between; padding:0 56px 40px}
-  .tagline{font-size:13px; font-weight:800; letter-spacing:.16em; color:var(--crimson)}
-  .tagline b{color:var(--ink)}
-  .foot-r{font-size:13px; font-weight:600; color:var(--grey)}
+
+  /* ---- signature: drawing-sheet title-block footer ---- */
+  .s-foot{padding:0 56px 40px}
+  .tb{display:flex; align-items:stretch; border:2.5px solid var(--ink); font-family:'IBM Plex Mono',monospace;
+    font-size:13.5px; font-weight:500; letter-spacing:.08em; color:var(--ink)}
+  .tb span{padding:11px 18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .tb .tb-name{border-right:2.5px solid var(--ink)}
+  .tb .tb-series{flex:1; text-align:center; color:var(--grey); border-right:2.5px solid var(--ink)}
+  .tb .tb-sheet{font-weight:600; color:var(--crimson)}
+  .slide.cover .tb, .slide.cta .tb{border-color:rgba(255,255,255,.5); color:#fff}
+  .slide.cover .tb .tb-name, .slide.cover .tb .tb-series, .slide.cta .tb .tb-name, .slide.cta .tb .tb-series{border-color:rgba(255,255,255,.5)}
+  .slide.cover .tb .tb-series, .slide.cta .tb .tb-series{color:rgba(255,255,255,.65)}
+  .slide.cover .tb .tb-sheet, .slide.cta .tb .tb-sheet{color:var(--yellow)}
 
   /* COVER / hook (maroon) */
   .slide.cover{background:var(--maroon); color:#fff}
   .slide.cover .wm .w1{color:#fff}
   .slide.cover .wm .w2{color:rgba(255,255,255,.7)}
   .slide.cover .pageno{color:rgba(255,255,255,.55)}
-  .cover .kicker{font-size:22px; font-weight:700; letter-spacing:.04em; color:var(--yellow); text-transform:uppercase; margin-bottom:26px}
-  .cover .title{font-size:74px; font-weight:800; line-height:1.06; letter-spacing:-.015em}
+  .cover .kicker{font-family:'IBM Plex Mono',monospace; font-size:19px; font-weight:600; letter-spacing:.14em; color:var(--yellow); text-transform:uppercase; margin-bottom:26px}
+  .cover .title{font-family:'Archivo Black',sans-serif; font-size:76px; font-weight:400; line-height:1.04; letter-spacing:-.01em}
   .cover .title .hl{color:var(--yellow)}
   .cover .sub{font-size:27px; font-weight:500; color:rgba(255,255,255,.82); margin-top:30px; line-height:1.4; max-width:84%}
   .slide.cover .tagline{color:var(--yellow)}
@@ -68,10 +81,10 @@
 
   /* SECTION (white, numbered category + checklist) */
   .sec-head{display:flex; align-items:center; gap:22px; margin-bottom:34px}
-  .badge{flex:0 0 auto; width:84px; height:84px; border-radius:18px; background:var(--crimson); color:#fff;
-    font-size:40px; font-weight:800; display:flex; align-items:center; justify-content:center}
-  .sec-head .cat{font-size:38px; font-weight:800; color:var(--ink); line-height:1.1}
-  .sec-head .cat small{display:block; font-size:18px; font-weight:700; letter-spacing:.18em; color:var(--crimson); text-transform:uppercase; margin-bottom:6px}
+  .badge{flex:0 0 auto; width:84px; height:84px; border-radius:14px; background:var(--crimson); color:#fff;
+    font-family:'Archivo Black',sans-serif; font-size:38px; font-weight:400; display:flex; align-items:center; justify-content:center}
+  .sec-head .cat{font-family:'Archivo Black',sans-serif; font-size:36px; font-weight:400; color:var(--ink); line-height:1.12}
+  .sec-head .cat small{display:block; font-family:'IBM Plex Mono',monospace; font-size:16px; font-weight:600; letter-spacing:.16em; color:var(--crimson); text-transform:uppercase; margin-bottom:8px}
   ul.checks{list-style:none; display:flex; flex-direction:column; gap:20px}
   ul.checks li{display:flex; gap:18px; align-items:flex-start; font-size:29px; font-weight:500; color:#2c2c2c; line-height:1.32}
   ul.checks li::before{content:"✓"; flex:0 0 auto; width:40px; height:40px; border-radius:9px; background:#fbe7eb; color:var(--crimson);
@@ -79,12 +92,12 @@
   .sec-note{margin-top:30px; font-size:27px; font-weight:700; font-style:italic; color:var(--crimson); line-height:1.3}
 
   /* STAT */
-  .stat .label{font-size:30px; font-weight:600; color:var(--soft); margin-bottom:14px; line-height:1.3}
-  .stat .figure{font-size:150px; font-weight:900; color:var(--crimson); line-height:.95; letter-spacing:-.02em}
-  .stat .sub{font-size:26px; font-weight:500; color:#3a3a3a; margin-top:24px; line-height:1.4; max-width:88%}
+  .stat .label{font-family:'IBM Plex Mono',monospace; font-size:23px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--soft); margin-bottom:18px; line-height:1.35}
+  .stat .figure{font-family:'Archivo Black',sans-serif; font-size:148px; font-weight:400; color:var(--crimson); line-height:.95; letter-spacing:-.015em}
+  .stat .sub{font-size:26px; font-weight:500; color:#3a3a3a; margin-top:26px; line-height:1.45; max-width:88%}
 
   /* STATEMENT / takeaway */
-  .statement .big{font-size:60px; font-weight:800; line-height:1.12; letter-spacing:-.01em; color:var(--ink)}
+  .statement .big{font-family:'Archivo Black',sans-serif; font-size:56px; font-weight:400; line-height:1.12; letter-spacing:-.005em; color:var(--ink)}
   .statement .big .hl{color:var(--crimson)}
 
   /* CTA (maroon) */
@@ -92,7 +105,7 @@
   .slide.cta .wm .w1{color:#fff}
   .slide.cta .wm .w2{color:rgba(255,255,255,.7)}
   .slide.cta .pageno{color:rgba(255,255,255,.55)}
-  .cta .ctitle{font-size:62px; font-weight:800; line-height:1.1; letter-spacing:-.01em}
+  .cta .ctitle{font-family:'Archivo Black',sans-serif; font-size:58px; font-weight:400; line-height:1.1; letter-spacing:-.005em}
   .cta .ctitle .hl{color:var(--yellow)}
   .cta .csub{font-size:28px; font-weight:500; color:rgba(255,255,255,.85); margin-top:26px; line-height:1.4}
   .cta .person{margin-top:48px; padding-top:28px; border-top:2px solid rgba(255,255,255,.22)}
@@ -180,7 +193,12 @@ try {
 
 /* ===== render ===== */
 const wm = (light)=>`<div class="wm"><div class="w1">Shravan C. Mudaliar</div><div class="w2">CORPORATE INTERIOR EXECUTION</div></div>`;
-const foot = (i,n)=>`<div class="s-foot"><div class="tagline">PROJECT GOVERNANCE · <b>EXECUTION</b></div><div class="foot-r">${i+1} / ${n}</div></div>`;
+/* signature: drawing-sheet title-block — from his world (fit-out drawings), sheet no. encodes real sequence */
+const foot = (i,n)=>`<div class="s-foot"><div class="tb">
+  <span class="tb-name">SHRAVAN C. MUDALIAR</span>
+  <span class="tb-series">EXECUTION EXCELLENCE SERIES</span>
+  <span class="tb-sheet">SHEET ${String(i+1).padStart(2,'0')} / ${String(n).padStart(2,'0')}</span>
+</div></div>`;
 
 function renderSlide(s, i, n){
   const top = `<div class="s-top">${wm()}${MARK}</div>`;
