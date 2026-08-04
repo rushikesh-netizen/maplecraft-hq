@@ -240,7 +240,15 @@ function show(key){
 const pick=document.getElementById('pick');
 Object.keys(DECKS).forEach(k=>{ const b=document.createElement('button'); b.dataset.k=k; b.textContent=k; b.onclick=()=>show(k); pick.appendChild(b); });
 const start=new URLSearchParams(location.search).get('post');
-show(DECKS[start]?start:'P3');
+/* studio mode: opened for ONE draft — hide the internal deck picker (P2/P3/P5 are review artifacts) */
+if(start==='DRAFT'){
+  pick.style.display='none';
+  document.querySelector('.bar h1').innerHTML='Shravan <b>Carousel · PDF export</b>';
+  if(!DECKS.DRAFT){ document.getElementById('stage').innerHTML=
+    '<div class="empty">No draft carousel yet — pick a variation in the Studio first, then reopen this page.</div>';
+    document.getElementById('meta').textContent=''; }
+}
+if(start!=='DRAFT'||DECKS.DRAFT) show(DECKS[start]?start:'P3');
 window.addEventListener('resize', fit);
 </script>
 </body>
