@@ -103,6 +103,9 @@ textarea.edit{width:100%;min-height:360px;font:inherit;font-size:13px;line-heigh
 .li-actions span{font-size:13px;font-weight:600;color:#5a5a5a;padding:9px 12px;border-radius:6px}
 .li-actions span:hover{background:#f2f2f2}
 .modtabs{display:flex;gap:8px;margin:18px 0 0}
+.backlink{display:inline-flex;align-items:center;gap:7px;border:0;background:none;font:inherit;font-size:13px;font-weight:800;color:var(--crimson);cursor:pointer;padding:8px 12px 8px 0;margin:2px 0 4px}
+.backlink:hover{text-decoration:underline}
+.backlink:focus-visible{outline:2px solid var(--crimson);outline-offset:2px;border-radius:6px}
 .rowb{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
 .loading{padding:60px;text-align:center;color:var(--grey);font-weight:700}
 iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:12px;background:#ededed}
@@ -237,13 +240,24 @@ function takeQuota(d){if(d&&d.quota){quotaInfo=d.quota;localStorage.setItem('quo
 
 function key(){let k=localStorage.getItem('studioKey');
  if(!k){k=prompt('Studio passcode:')||'';localStorage.setItem('studioKey',k);}return k;}
+let popNav=false;
 function state(id,crumb){['board','calendar','options','approve'].forEach(s=>
  document.getElementById(s).classList.toggle('hidden',s!==id));
  const home=(id==='board'||id==='calendar');
  document.getElementById('modtabs').classList.toggle('hidden',!home);
  document.getElementById('mt-board').classList.toggle('on',id==='board');
  document.getElementById('mt-cal').classList.toggle('on',id==='calendar');
- document.getElementById('crumb').textContent=crumb;window.scrollTo(0,0);}
+ document.getElementById('crumb').textContent=crumb;window.scrollTo(0,0);
+ if(!popNav) history.pushState({id,crumb},'');   // phone/browser back = one step back in the studio
+}
+window.addEventListener('popstate',e=>{popNav=true;
+ const s=e.state&&e.state.id;
+ if(s==='approve'&&chosen) renderApprove();
+ else if(s==='options'&&topic) renderTopic();
+ else if(s==='calendar') state('calendar','📅 CONTENT CALENDAR');
+ else state('board','1 · PICK A TOPIC');
+ popNav=false;});
+history.replaceState({id:'board'},'');
 function pick(t,f){ if(!t||!t.trim()) return; topic=t.trim();
  fmt=f||suggFmt(topic);
  renderTopic(); }
@@ -335,6 +349,7 @@ function renderTopic(msg){
   state('options','2 · GENERATE & PICK');
   const list=drafts[topic]||[];
   document.getElementById('options').innerHTML=`
+   <button class="backlink" onclick="state('board','1 · PICK A TOPIC')">← Idea bank</button>
    <h2>${esc(topic)}</h2>
    <div class="rowb" style="margin-top:6px">
     <div class="toggle" id="fmt2">
@@ -342,7 +357,6 @@ function renderTopic(msg){
       <button data-f="carousel" class="${fmt==='carousel'?'on':''}">Carousel</button>
     </div>
     <button class="btn" id="genbtn" onclick="generate()">⚡ Generate 2 ${list.length?'more ':''}options</button>
-    <button class="btn alt" onclick="state('board','1 · PICK A TOPIC')">← Back to ideas</button>
    </div>
    ${msg?`<div class="loading" id="genmsg">${msg}</div>`:''}
    <h2 style="margin-top:22px">Saved variations <span class="sub">· ${list.length} stored — nothing is lost when you leave</span></h2>
@@ -390,6 +404,7 @@ function nextMondayISO(){
 function renderApprove(){
   state('approve','3 · PREVIEW, EDIT & SCHEDULE');
   document.getElementById('approve').innerHTML=`
+   <button class="backlink" onclick="renderTopic()">← All variations</button>
    <h2>How it will look on LinkedIn <span class="sub">· ${esc(topic)} · ${esc(chosen.category)}</span></h2>
    <div class="rowb" style="margin:4px 0 12px">
     <button class="pill on" id="pv-tab" onclick="pvMode(true)">👁 Preview</button>
@@ -419,7 +434,6 @@ function renderApprove(){
    <div class="rowb">
     <button class="btn gold" onclick="navigator.clipboard.writeText(chosen.caption).then(()=>this.textContent='✓ Copied')">Copy caption</button>
     <button class="btn" onclick="schedule()">Schedule → Mon ${firstFreeMondayISO().slice(8,10)}/${firstFreeMondayISO().slice(5,7)} · 11:00 IST</button>
-    <button class="btn alt" onclick="renderTopic()">← Back to variations</button>
    </div><div class="note" id="schednote"></div>`;
   const box=document.getElementById('editbox');
   box.addEventListener('input',()=>{
