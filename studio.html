@@ -349,7 +349,7 @@ function renderTopic(msg){
   state('options','2 · GENERATE & PICK');
   const list=drafts[topic]||[];
   document.getElementById('options').innerHTML=`
-   <button class="backlink" onclick="state('board','1 · PICK A TOPIC')">← Idea bank</button>
+   <button class="backlink" onclick="state('board','1 · PICK A TOPIC')">← Back</button>
    <h2>${esc(topic)}</h2>
    <div class="rowb" style="margin-top:6px">
     <div class="toggle" id="fmt2">
@@ -404,7 +404,7 @@ function nextMondayISO(){
 function renderApprove(){
   state('approve','3 · PREVIEW, EDIT & SCHEDULE');
   document.getElementById('approve').innerHTML=`
-   <button class="backlink" onclick="renderTopic()">← All variations</button>
+   <button class="backlink" onclick="renderTopic()">← Back</button>
    <h2>How it will look on LinkedIn <span class="sub">· ${esc(topic)} · ${esc(chosen.category)}</span></h2>
    <div class="rowb" style="margin:4px 0 12px">
     <button class="pill on" id="pv-tab" onclick="pvMode(true)">👁 Preview</button>
