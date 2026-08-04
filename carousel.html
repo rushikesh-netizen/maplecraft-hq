@@ -52,17 +52,13 @@
   /* body */
   .s-body{flex:1; padding:34px 56px 0; display:flex; flex-direction:column; justify-content:center}
 
-  /* ---- signature: drawing-sheet title-block footer ---- */
+  /* ---- footer: quiet series label + sheet number, no rules ---- */
   .s-foot{padding:0 56px 40px}
-  .tb{display:flex; align-items:stretch; border:2.5px solid var(--ink); font-family:'IBM Plex Mono',monospace;
-    font-size:13.5px; font-weight:500; letter-spacing:.08em; color:var(--ink)}
-  .tb span{padding:11px 18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .tb .tb-name{border-right:2.5px solid var(--ink)}
-  .tb .tb-series{flex:1; text-align:center; color:var(--grey); border-right:2.5px solid var(--ink)}
+  .tb{display:flex; align-items:baseline; justify-content:space-between; font-family:'IBM Plex Mono',monospace;
+    font-size:13px; font-weight:500; letter-spacing:.1em}
+  .tb .tb-series{color:var(--grey)}
   .tb .tb-sheet{font-weight:600; color:var(--crimson)}
-  .slide.cover .tb, .slide.cta .tb{border-color:rgba(255,255,255,.5); color:#fff}
-  .slide.cover .tb .tb-name, .slide.cover .tb .tb-series, .slide.cta .tb .tb-name, .slide.cta .tb .tb-series{border-color:rgba(255,255,255,.5)}
-  .slide.cover .tb .tb-series, .slide.cta .tb .tb-series{color:rgba(255,255,255,.65)}
+  .slide.cover .tb .tb-series, .slide.cta .tb .tb-series{color:rgba(255,255,255,.6)}
   .slide.cover .tb .tb-sheet, .slide.cta .tb .tb-sheet{color:var(--yellow)}
 
   /* COVER / hook (maroon) */
@@ -143,8 +139,7 @@
 <div class="stage" id="stage"></div>
 
 <script>
-/* ===== PERSONAL MARK — Shravan's initials (colour only, no company logo) ===== */
-const MARK = `<div style="width:54px;height:54px;border-radius:13px;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;letter-spacing:.01em">SM</div>`;
+/* SM mark removed per Shravan feedback 4 Aug — white slides carry the wordmark only */
 
 /* embed mode = rendered inside the dashboard View modal (toolbar hidden, slides scale to the frame) */
 const EMBED = new URLSearchParams(location.search).get('embed')==='1';
@@ -193,15 +188,13 @@ try {
 
 /* ===== render ===== */
 const wm = (light)=>`<div class="wm"><div class="w1">Shravan C. Mudaliar</div><div class="w2">CORPORATE INTERIOR EXECUTION</div></div>`;
-/* signature: drawing-sheet title-block — from his world (fit-out drawings), sheet no. encodes real sequence */
 const foot = (i,n)=>`<div class="s-foot"><div class="tb">
-  <span class="tb-name">SHRAVAN C. MUDALIAR</span>
   <span class="tb-series">EXECUTION EXCELLENCE SERIES</span>
   <span class="tb-sheet">SHEET ${String(i+1).padStart(2,'0')} / ${String(n).padStart(2,'0')}</span>
 </div></div>`;
 
 function renderSlide(s, i, n){
-  const top = `<div class="s-top">${wm()}${MARK}</div>`;
+  const top = `<div class="s-top">${wm()}</div>`;
   if(s.type==='cover') return `<div class="slide cover">
     <div class="s-top">${wm(1)}<div class="pageno">SWIPE →</div></div>
     <div class="s-body">${s.kicker?`<div class="kicker">${s.kicker}</div>`:''}<div class="rule"></div>

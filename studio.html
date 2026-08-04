@@ -85,6 +85,20 @@ h2 .sub{font-size:11px;font-weight:600;color:var(--grey)}
 .card .drafts{position:absolute;bottom:12px;right:12px;font-size:10px;font-weight:800;background:#e9eef4;color:#2b4a6f;padding:3px 8px;border-radius:999px}
 textarea.edit{width:100%;min-height:360px;font:inherit;font-size:13.5px;line-height:1.6;padding:16px;border:1.5px solid var(--line);border-radius:12px;background:#fffefb;resize:vertical;outline-color:var(--crimson)}
 .editnote{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--grey);margin-top:6px}
+/* ---- LinkedIn-style post preview ---- */
+.li-post{max-width:555px;background:#fff;border:1px solid #d9d3d0;border-radius:10px;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.li-head{display:flex;gap:10px;padding:14px 16px 8px;align-items:flex-start}
+.li-ava{flex:0 0 auto;width:48px;height:48px;border-radius:50%;background:var(--maroon);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:17px}
+.li-name{font-size:14.5px;font-weight:700;color:#1a1a1a;line-height:1.3}
+.li-sub{font-size:12px;color:#666;line-height:1.4}
+.li-cap{padding:4px 16px 12px;font-size:14px;line-height:1.5;color:#181818;word-break:break-word}
+.li-more{color:#666;cursor:pointer;font-weight:600}
+.li-doc iframe{width:100%;height:560px;border:0;display:block;background:#ededed}
+.li-docbar{background:#f3f2f0;padding:9px 14px;font-size:12.5px;font-weight:600;color:#444;border-top:1px solid #e5e2df;display:flex;justify-content:space-between}
+.li-actions{display:flex;justify-content:space-around;padding:5px 8px;border-top:1px solid #ececec}
+.li-actions span{font-size:13px;font-weight:600;color:#5a5a5a;padding:9px 12px;border-radius:6px}
+.li-actions span:hover{background:#f2f2f2}
+.modtabs{display:flex;gap:8px;margin:18px 0 0}
 .rowb{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
 .loading{padding:60px;text-align:center;color:var(--grey);font-weight:700}
 iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:12px;background:#ededed}
@@ -100,6 +114,10 @@ iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:12px;b
   <span class="step" id="crumb">1 · PICK A TOPIC</span>
 </header>
 <main>
+  <div class="modtabs" id="modtabs">
+    <button class="pill on" id="mt-board" onclick="state('board','1 · PICK A TOPIC')">💡 Idea Studio</button>
+    <button class="pill" id="mt-cal" onclick="state('calendar','📅 CONTENT CALENDAR')">📅 Calendar</button>
+  </div>
   <section id="board">
     <div class="howto">
       <div><b>1</b>Pick an idea below — or type your own</div>
@@ -119,7 +137,9 @@ iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:12px;b
     </div>
     <div class="grid" id="titles"></div>
     <div class="pager" id="pager"></div>
-    <h2>📅 Content calendar <span class="sub">every Monday · 11:00 IST</span></h2>
+  </section>
+  <section id="calendar" class="hidden">
+    <h2>📅 Content calendar <span class="sub">every Monday · 11:00 IST · posts land here when you hit Schedule</span></h2>
     <div class="cal" id="cal"></div>
   </section>
   <section id="options" class="hidden"></section>
@@ -214,8 +234,12 @@ function takeQuota(d){if(d&&d.quota){quotaInfo=d.quota;localStorage.setItem('quo
 
 function key(){let k=localStorage.getItem('studioKey');
  if(!k){k=prompt('Studio passcode:')||'';localStorage.setItem('studioKey',k);}return k;}
-function state(id,crumb){['board','options','approve'].forEach(s=>
+function state(id,crumb){['board','calendar','options','approve'].forEach(s=>
  document.getElementById(s).classList.toggle('hidden',s!==id));
+ const home=(id==='board'||id==='calendar');
+ document.getElementById('modtabs').classList.toggle('hidden',!home);
+ document.getElementById('mt-board').classList.toggle('on',id==='board');
+ document.getElementById('mt-cal').classList.toggle('on',id==='calendar');
  document.getElementById('crumb').textContent=crumb;window.scrollTo(0,0);}
 function pick(t,f){ if(!t||!t.trim()) return; topic=t.trim();
  fmt=f||suggFmt(topic);
@@ -362,14 +386,34 @@ function nextMondayISO(){
   return d.toISOString().slice(0,10);
 }
 function renderApprove(){
-  state('approve','3 · EDIT, APPROVE & SCHEDULE');
+  state('approve','3 · PREVIEW, EDIT & SCHEDULE');
   document.getElementById('approve').innerHTML=`
-   <h2>Final post — ${esc(topic)} <span class="sub">· ${esc(chosen.category)}</span></h2>
-   <textarea class="edit" id="editbox" spellcheck="true">${esc(chosen.caption)}</textarea>
-   <div class="editnote">✎ EDIT FREELY — changes save automatically to this variation.</div>
-   ${chosen.deck?`<h2>Carousel preview</h2>
-    <iframe src="carousel.html?post=DRAFT&embed=1"></iframe>
-    <div class="note">PDF for LinkedIn: open <a href="carousel.html?post=DRAFT" target="_blank">full view</a> → "Save as PDF". (Slide text comes from the generation — to change slides, edit here for the caption and ⚡ regenerate for a new deck.)</div>`:''}
+   <h2>How it will look on LinkedIn <span class="sub">· ${esc(topic)} · ${esc(chosen.category)}</span></h2>
+   <div class="rowb" style="margin:4px 0 12px">
+    <button class="pill on" id="pv-tab" onclick="pvMode(true)">👁 Preview</button>
+    <button class="pill" id="ed-tab" onclick="pvMode(false)">✎ Edit text</button>
+   </div>
+   <div id="pvwrap">
+    <div class="li-post">
+     <div class="li-head">
+      <div class="li-ava">SM</div>
+      <div>
+       <div class="li-name">Shravan C. Mudaliar</div>
+       <div class="li-sub">Corporate Interior Execution &amp; Workplace Delivery Leader</div>
+       <div class="li-sub">Now · 🌐</div>
+      </div>
+     </div>
+     <div class="li-cap" id="licap"></div>
+     ${chosen.deck?`<div class="li-doc"><iframe src="carousel.html?post=DRAFT&embed=1"></iframe>
+      <div class="li-docbar"><span>Document · ${chosen.deck.length} pages</span><span>▸ swipe</span></div></div>`:''}
+     <div class="li-actions"><span>👍 Like</span><span>💬 Comment</span><span>🔁 Repost</span><span>➤ Send</span></div>
+    </div>
+    ${chosen.deck?`<div class="note">PDF for LinkedIn: open <a href="carousel.html?post=DRAFT" target="_blank">full view</a> → "Save as PDF". To change slide text, edit the caption here and ⚡ regenerate for a new deck.</div>`:''}
+   </div>
+   <div id="edwrap" class="hidden">
+    <textarea class="edit" id="editbox" spellcheck="true">${esc(chosen.caption)}</textarea>
+    <div class="editnote">✎ EDIT FREELY — saves automatically; flip back to Preview to see it as LinkedIn will show it.</div>
+   </div>
    <div class="rowb">
     <button class="btn gold" onclick="navigator.clipboard.writeText(chosen.caption).then(()=>this.textContent='✓ Copied')">Copy caption</button>
     <button class="btn" onclick="schedule()">Schedule → Mon ${firstFreeMondayISO().slice(8,10)}/${firstFreeMondayISO().slice(5,7)} · 11:00 IST</button>
@@ -380,6 +424,22 @@ function renderApprove(){
     chosen.caption=box.value; chosen.edited=true;
     if(chosenIdx>=0&&drafts[topic]&&drafts[topic][chosenIdx]){drafts[topic][chosenIdx]=chosen; save('studioDrafts',drafts);}
   });
+  renderCap(false);
+}
+/* LinkedIn-style caption with the real "…see more" fold */
+function renderCap(expanded){
+  const el=document.getElementById('licap'); if(!el) return;
+  const c=chosen.caption, brk=t=>esc(t).replace(/\n/g,'<br>');
+  el.innerHTML=(!expanded&&c.length>230)
+    ? brk(c.slice(0,230))+`<span class="li-more" onclick="renderCap(true)">…see more</span>`
+    : brk(c);
+}
+function pvMode(preview){
+  document.getElementById('pvwrap').classList.toggle('hidden',!preview);
+  document.getElementById('edwrap').classList.toggle('hidden',preview);
+  document.getElementById('pv-tab').classList.toggle('on',preview);
+  document.getElementById('ed-tab').classList.toggle('on',!preview);
+  if(preview) renderCap(false);
 }
 function schedule(){
   navigator.clipboard.writeText(chosen.caption);
