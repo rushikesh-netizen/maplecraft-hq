@@ -89,6 +89,10 @@ h2 .sub{font-size:10px;font-weight:600;color:var(--grey)}
 .card .drafts{position:absolute;bottom:12px;right:12px;font-size:10px;font-weight:800;background:#e9eef4;color:#2b4a6f;padding:3px 8px;border-radius:999px}
 textarea.edit{width:100%;min-height:360px;font:inherit;font-size:13px;line-height:1.6;padding:16px;border:1.5px solid var(--line);border-radius:12px;background:#fffefb;resize:vertical;outline-color:var(--crimson)}
 .editnote{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--grey);margin-top:6px}
+.crit{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.05em;padding:3px 8px;border-radius:5px}
+.crit.ship{background:#e7f0e7;color:#2e6b2e}.crit.rev{background:#fff6d6;color:#7a5c00}
+.auditline{font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.7;margin-top:8px}
+.auditline .ok{color:#2e6b2e}.auditline .bad{color:#a33}
 /* ---- LinkedIn-style post preview ---- */
 .li-post{max-width:555px;background:#fff;border:1px solid #d9d3d0;border-radius:10px;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .li-head{display:flex;gap:10px;padding:14px 16px 8px;align-items:flex-start}
@@ -204,6 +208,29 @@ let favs=new Set(ls('studioFavs',[]));
 let drafts=ls('studioDrafts',{});   // {topic: [{caption,deck,category,why,fmt,at}, ...]} — every generation is kept
 let chosenIdx=-1, quotaInfo=ls('quotaInfo',null);
 const esc=s=>String(s).replace(/</g,'&lt;');
+
+/* ---- mechanical audit (content-engine harvest 2026-08-05): deterministic, instant, judgement-free ---- */
+const AUDIT_CHECKS=[
+ ['em dash',/[—–]/],
+ ['filler word',/\b(really|very|just|basically|literally|actually|simply)\b/i],
+ ['filler opener',/(in today's world|let me tell you|the truth is|here's the thing|excited to share|uncomfortable truth)/i],
+ ['banned CTA',/(what do you think|agree\?|like and share|let me know in the comments)/i],
+ ['link in caption',/https?:\/\//i],
+];
+function audit(c){
+ const fails=AUDIT_CHECKS.filter(p=>p[1].test(c)).map(p=>p[0]);
+ if(((c.split('\n')[0])||'').length>140)fails.push('hook past the 140-char fold');
+ return fails;
+}
+function auditHTML(c){
+ const f=audit(c),hook=(c.split('\n')[0]||''),words=(c.trim().match(/\S+/g)||[]).length;
+ return `<div class="auditline">${f.length?`<span class="bad">⚠ ${f.map(esc).join(' · ')}</span>`:'<span class="ok">✓ mechanical audit clean</span>'} · ${words} words · hook ${hook.length}/140</div>`;
+}
+function criticHTML(v){
+ if(!v.critic||!v.critic.scores)return '';
+ const c=v.critic;
+ return `<span class="crit ${c.verdict==='SHIP'?'ship':'rev'}">⚖ ${c.verdict} · ${Number(c.avg||0).toFixed(1)} · HOOK ${c.scores.hook}</span>`;
+}
 
 /* ---- cloud state: Worker KV is the source of truth; localStorage is the cache ---- */
 let syncTimer=null;
@@ -362,9 +389,11 @@ function renderTopic(msg){
    <h2 style="margin-top:22px">Saved variations <span class="sub">· ${list.length} stored — nothing is lost when you leave</span></h2>
    ${list.length?`<div class="two">${list.map((v,i)=>`
     <div class="opt"><span class="tag">${esc(v.category)}</span>
-     <div class="vmeta"><span class="fchip ${v.fmt==='carousel'?'c':'t'}">${v.fmt==='carousel'?`▤ CAROUSEL${v.deck?' ×'+v.deck.length:''}`:'✎ TEXT'}</span> ${(v.at||'').slice(0,10)} ${v.edited?'· ✎ EDITED':''}</div>
+     <div class="vmeta"><span class="fchip ${v.fmt==='carousel'?'c':'t'}">${v.fmt==='carousel'?`▤ CAROUSEL${v.deck?' ×'+v.deck.length:''}`:'✎ TEXT'}</span> ${(v.at||'').slice(0,10)} ${v.edited?'· ✎ EDITED':''} ${criticHTML(v)}</div>
      <div class="why">Why this could perform: ${esc(v.why)}</div>
      <pre>${esc(v.caption)}</pre>
+     ${v.critic&&v.critic.verdict==='REVISE'&&v.critic.fix?`<div class="why">⚖ Critic's fix: ${esc(v.critic.fix)}</div>`:''}
+     ${auditHTML(v.caption)}
      ${v.deck?`<div class="note">${v.deck.length} carousel slides — preview after picking.</div>`:''}
      <div class="rowb" style="margin-top:4px">
        <button class="btn" onclick="choose(${i})">Use this one</button>
@@ -378,9 +407,12 @@ function delDraft(i){ (drafts[topic]||[]).splice(i,1); save('studioDrafts',draft
 async function generate(){
   const b=document.getElementById('genbtn'); if(b){b.disabled=true;b.textContent='⚡ Writing…';}
   try{
+    const recent=Object.values(drafts).flat()
+      .sort((a,b)=>(b.at||'').localeCompare(a.at||'')).slice(0,6)
+      .map(v=>(v.caption||'').split('\n')[0]);
     const r=await fetch(WORKER_URL+'/generate',{method:'POST',
       headers:{'Content-Type':'application/json','X-Studio-Key':key()},
-      body:JSON.stringify({topic,format:fmt})});
+      body:JSON.stringify({topic,format:fmt,recent})});
     if(r.status===401){localStorage.removeItem('studioKey');throw new Error('Wrong passcode — reload and try again.');}
     const d=await r.json();
     if(!r.ok) throw new Error(d.error||('error '+r.status));
@@ -431,6 +463,7 @@ function renderApprove(){
     <textarea class="edit" id="editbox" spellcheck="true">${esc(chosen.caption)}</textarea>
     <div class="editnote">✎ EDIT FREELY — saves automatically; flip back to Preview to see it as LinkedIn will show it.</div>
    </div>
+   <div id="liveaudit">${auditHTML(chosen.caption)}</div>
    <div class="rowb">
     <button class="btn gold" onclick="navigator.clipboard.writeText(chosen.caption).then(()=>this.textContent='✓ Copied')">Copy caption</button>
     <button class="btn" onclick="schedule()">Schedule → Mon ${firstFreeMondayISO().slice(8,10)}/${firstFreeMondayISO().slice(5,7)} · 11:00 IST</button>
@@ -439,6 +472,7 @@ function renderApprove(){
   box.addEventListener('input',()=>{
     chosen.caption=box.value; chosen.edited=true;
     if(chosenIdx>=0&&drafts[topic]&&drafts[topic][chosenIdx]){drafts[topic][chosenIdx]=chosen; save('studioDrafts',drafts);}
+    const la=document.getElementById('liveaudit'); if(la)la.innerHTML=auditHTML(box.value);
   });
   renderCap(false);
 }
