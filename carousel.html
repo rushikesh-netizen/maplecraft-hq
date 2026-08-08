@@ -138,11 +138,13 @@
 <div class="bar">
   <h1>Shravan <b>Carousels</b></h1>
   <div class="pick" id="pick"></div>
-  <button class="pdf" onclick="window.print()">⤓ Save as PDF</button>
+  <button class="pdf" id="pngbtn" onclick="exportPNGs()">⤓ Download PNGs</button>
+  <button onclick="window.print()">⤓ PDF (LinkedIn document post)</button>
   <span class="meta" id="meta"></span>
 </div>
 <div class="stage" id="stage"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.min.js"></script>
 <script>
 /* SM mark removed per Shravan feedback 4 Aug — white slides carry the wordmark only */
 
@@ -230,6 +232,51 @@ function renderSlide(s, i, n){
   return `<div class="slide"><div class="s-body">${s.text||''}</div></div>`;
 }
 
+/* ---- PNG export ----
+   Files are named so they sort in upload order and say what they are:
+   shravan-2026-08-11-cost-of-delay-01.png … -07.png
+   The PDF button stays because LinkedIn's swipeable *document* post takes a PDF;
+   the PNGs are for image posts, review and sharing. */
+const slug = s => String(s||'carousel').toLowerCase().normalize('NFKD')
+  .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'carousel';
+function deckMeta(){
+  let m={}; try{ m=JSON.parse(localStorage.getItem('studioDraftMeta'))||{}; }catch(e){}
+  const d=m.date||new Date(Date.now()+5.5*3600e3).toISOString().slice(0,10);
+  return { date:d, slug:slug(m.topic|| (DECKS[current]&&DECKS[current].title) || 'carousel') };
+}
+async function exportPNGs(){
+  const btn=document.getElementById('pngbtn');
+  const slides=[...document.querySelectorAll('.slide')];
+  if(!slides.length){ alert('Nothing to export yet.'); return; }
+  if(typeof htmlToImage==='undefined'){ alert('Image exporter did not load — check the connection and reload.'); return; }
+  const {date,slug:sl}=deckMeta(); const n=slides.length;
+  btn.disabled=true;
+  try{
+    await document.fonts.ready;   // Archivo Black / Montserrat must be loaded or the export falls back
+    for(let i=0;i<n;i++){
+      btn.textContent=`⤓ Rendering ${i+1}/${n}…`;
+      const el=slides[i], prev=el.style.transform;
+      el.style.transform='none';                       // capture at full 1080×1350, not the preview scale
+      let url;
+      try{
+        // NO backgroundColor option here: it paints a flat fill OVER the slide, which
+        // silently produced all-white exports with only the yellow text visible.
+        url=await htmlToImage.toPng(el,{width:1080,height:1350,pixelRatio:1,cacheBust:true});
+      } finally { el.style.transform=prev; }
+      const a=document.createElement('a');
+      a.href=url; a.download=`shravan-${date}-${sl}-${String(i+1).padStart(2,'0')}.png`;
+      document.body.appendChild(a); a.click(); a.remove();
+      await new Promise(r=>setTimeout(r,350));         // browsers throttle rapid multi-file downloads
+    }
+    btn.textContent=`✓ ${n} PNGs downloaded`;
+    setTimeout(()=>{btn.textContent='⤓ Download PNGs';btn.disabled=false;},2600);
+  }catch(e){
+    btn.textContent='⤓ Download PNGs'; btn.disabled=false;
+    alert('Could not render the slides to PNG: '+e.message);
+  }
+}
+
+let current='P3';
 function fit(){
   document.querySelectorAll('.scaler').forEach(sc=>{
     const slide=sc.querySelector('.slide'); if(!slide) return;
@@ -240,7 +287,7 @@ function fit(){
   });
 }
 function show(key){
-  const d=DECKS[key]; const stage=document.getElementById('stage');
+  const d=DECKS[key]; const stage=document.getElementById('stage'); current=key;
   document.querySelectorAll('#pick button').forEach(b=>b.classList.toggle('active', b.dataset.k===key));
   document.getElementById('meta').textContent = d.title + ' · ' + (d.slides.length||0) + ' slides';
   if(!d.slides.length){ stage.innerHTML=`<div class="empty">Final slides for ${key} land here once the copy workflow completes.</div>`; return; }

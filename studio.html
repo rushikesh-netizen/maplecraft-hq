@@ -86,7 +86,14 @@ h2 .sub{font-size:10px;font-weight:600;color:var(--grey)}
 .opt .why{font-size:13px;color:var(--grey);font-style:italic}
 .opt pre{white-space:pre-wrap;font:inherit;font-size:13px;line-height:1.55;max-height:420px;overflow:auto}
 .opt .vmeta{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.05em;color:var(--grey)}
-.card .drafts{position:absolute;bottom:12px;right:12px;font-size:10px;font-weight:800;background:#e9eef4;color:#2b4a6f;padding:3px 8px;border-radius:999px}
+.card .drafts{position:absolute;bottom:12px;right:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.05em;background:#e7f0e7;color:#2e6b2e;padding:3px 8px;border-radius:999px}
+/* ---- pick up where you left off ---- */
+.recent{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px;margin-top:12px}
+.rcard{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:15px 16px;cursor:pointer;transition:border-color .12s}
+.rcard:hover{border-color:var(--crimson)}
+.rtitle{font-size:13px;font-weight:700;line-height:1.38;margin-bottom:10px}
+.st.ready{background:#e7f0e7;color:#2e6b2e}
+.dcount{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--grey)}
 textarea.edit{width:100%;min-height:360px;font:inherit;font-size:13px;line-height:1.6;padding:16px;border:1.5px solid var(--line);border-radius:12px;background:#fffefb;resize:vertical;outline-color:var(--crimson)}
 .editnote{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--grey);margin-top:6px}
 .crit{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.05em;padding:3px 8px;border-radius:5px}
@@ -156,6 +163,7 @@ iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:12px;b
       <div><b>3</b>Approve &amp; schedule for Monday 11:00</div>
     </div>
     <div class="own"><input id="own" placeholder="Write about anything — e.g. why fit-out handovers slip in the last 2 weeks"/><button class="btn" onclick="pick(document.getElementById('own').value)">Create post</button></div>
+    <div id="recent"></div>
     <h2>Idea bank <span class="sub" id="bankcount"></span></h2>
     <div class="toolbar">
       <button class="pill on" id="f-all" onclick="setFilter('all')">All ideas</button>
@@ -254,9 +262,14 @@ function setTpl(id){localStorage.setItem('studioTpl',id);
  document.querySelectorAll('#tplrow button').forEach(b=>b.classList.toggle('on',b.dataset.t===id));
  const f=document.getElementById('deckframe'); if(f)f.src=deckSrc();}
 /* one writer for deck edits: persist, keep the draft list in sync, then re-render the preview */
+/* carousel.html builds export filenames from this: shravan-<date>-<topic>-01.png */
+function saveDeckMeta(){
+ try{localStorage.setItem('studioDraftMeta',JSON.stringify({topic,date:firstFreeMondayISO()}));}catch(e){}
+}
 function pushDeck(){
  if(!chosen||!chosen.deck)return;
  localStorage.setItem('studioDraftDeck',JSON.stringify(chosen.deck));
+ saveDeckMeta();
  chosen.edited=true;
  if(chosenIdx>=0&&drafts[topic]&&drafts[topic][chosenIdx]){drafts[topic][chosenIdx]=chosen;save('studioDrafts',drafts);}
  clearTimeout(deckTimer);
@@ -358,6 +371,7 @@ function state(id,crumb){['board','calendar','options','approve'].forEach(s=>
  document.getElementById('modtabs').classList.toggle('hidden',!home);
  document.getElementById('mt-board').classList.toggle('on',id==='board');
  document.getElementById('mt-cal').classList.toggle('on',id==='calendar');
+ if(id==='board') renderBoard();   // returning to the board re-reads drafts, so "draft ready" is never stale
  document.getElementById('crumb').textContent=crumb;window.scrollTo(0,0);
  if(!popNav) history.pushState({id,crumb},'');   // phone/browser back = one step back in the studio
 }
@@ -394,12 +408,38 @@ function renderBoard(){
     ${esc(r.t)}
     <div class="chips"><span class="cat" data-p="${esc(r.c)}">${esc(r.c)}</span>
     <span class="fchip ${r.f==='carousel'?'c':'t'}">${r.f==='carousel'?'▤ CAROUSEL':'✎ TEXT'}</span></div>
-    ${(drafts[r.t]||[]).length?`<span class="drafts">📝 ${(drafts[r.t]||[]).length} draft${(drafts[r.t]||[]).length>1?'s':''}</span>`:''}
+    ${(drafts[r.t]||[]).length?`<span class="drafts">✓ ${(drafts[r.t]||[]).length} DRAFT${(drafts[r.t]||[]).length>1?'S':''} READY</span>`:''}
   </div>`).join(''):
   `<div class="empty-note">No favourites yet — tap the ♡ on any idea to save it here.</div>`;
  document.getElementById('pager').innerHTML=pages>1?
   Array.from({length:pages},(_,i)=>`<button class="pill ${i+1===page?'on':''}" onclick="setPage(${i+1})">Page ${i+1}</button>`).join(''):'';
+ renderRecent();
 }
+/* ---- "pick up where you left off": the newest topics that already have drafts ---- */
+let recentRows=[];
+function topicStatus(t){
+ const cal=ls('studioCal',{});
+ const hit=Object.entries(cal).find(([,v])=>v&&v.topic===t);
+ return hit ? {label:`Scheduled · Mon ${hit[0].slice(8,10)}/${hit[0].slice(5,7)}`,cls:'sched'}
+            : {label:'Draft ready',cls:'ready'};
+}
+function renderRecent(){
+ const el=document.getElementById('recent'); if(!el)return;
+ recentRows=Object.entries(drafts)
+  .map(([t,list])=>({t,n:(list||[]).length,fmt:(list&&list[0]||{}).fmt||'text',
+                     at:(list||[]).map(v=>v.at||'').sort().pop()||''}))
+  .filter(r=>r.n).sort((a,b)=>b.at.localeCompare(a.at)).slice(0,4);
+ if(!recentRows.length){el.innerHTML='';return;}
+ el.innerHTML=`<h2>Pick up where you left off <span class="sub">· nothing you wrote is ever lost</span></h2>
+  <div class="recent">${recentRows.map((r,i)=>{const s=topicStatus(r.t);
+   return `<div class="rcard" onclick="resume(${i})">
+     <div class="rtitle">${esc(r.t)}</div>
+     <div class="chips"><span class="st ${s.cls}">${esc(s.label)}</span>
+      <span class="fchip ${r.fmt==='carousel'?'c':'t'}">${r.fmt==='carousel'?'▤ CAROUSEL':'✎ TEXT'}</span>
+      <span class="dcount">${r.n} draft${r.n>1?'s':''}</span></div></div>`;}).join('')}</div>`;
+}
+function resume(i){const r=recentRows[i]; if(r) pick(r.t,r.fmt);}
+
 async function refreshIdeas(){
  const b=document.getElementById('refreshbtn');b.disabled=true;b.textContent='↻ Thinking…';
  try{
@@ -509,7 +549,7 @@ async function generate(){
 }
 function choose(i){
   chosen=drafts[topic][i]; chosenIdx=i; pageIdx=0;
-  if(chosen.deck) localStorage.setItem('studioDraftDeck',JSON.stringify(chosen.deck));
+  if(chosen.deck){ localStorage.setItem('studioDraftDeck',JSON.stringify(chosen.deck)); saveDeckMeta(); }
   renderApprove();
 }
 function nextMondayISO(){
