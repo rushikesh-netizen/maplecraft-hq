@@ -113,6 +113,11 @@
 
   .empty{color:#fff; padding:60px; font-size:15px; text-align:center; width:100%}
 
+  /* ===== TEMPLATE SKINS =====
+     A template restyles the 5 page types; it never changes their structure.
+     Add one block per template Rushi supplies, e.g. body[data-tpl="blueprint"]{ … }.
+     Only "classic" exists today, and classic is the base styling above. */
+
   /* ---- embed mode (inside the dashboard View modal) ---- */
   body.embed{background:#ededed}
   body.embed .bar{display:none}
@@ -144,6 +149,11 @@
 /* embed mode = rendered inside the dashboard View modal (toolbar hidden, slides scale to the frame) */
 const EMBED = new URLSearchParams(location.search).get('embed')==='1';
 if(EMBED) document.body.classList.add('embed');
+
+/* Template = LOOK ONLY. The 5 page types never change, so any deck can be swapped
+   between templates without regenerating. Styles hang off body[data-tpl="…"]
+   (see the TEMPLATE SKINS block in the stylesheet). */
+document.body.dataset.tpl = new URLSearchParams(location.search).get('tpl') || 'classic';
 
 /* ===== DECKS — populated from the production workflow's final decks =====
    Slide types: cover | section | stat | statement | cta

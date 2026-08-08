@@ -93,6 +93,28 @@ textarea.edit{width:100%;min-height:360px;font:inherit;font-size:13px;line-heigh
 .crit.ship{background:#e7f0e7;color:#2e6b2e}.crit.rev{background:#fff6d6;color:#7a5c00}
 .auditline{font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.7;margin-top:8px}
 .auditline .ok{color:#2e6b2e}.auditline .bad{color:#a33}
+/* ---- page-wise carousel editor ---- */
+.pgwrap{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px}
+.pgnav{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.pgnav .now{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--soft)}
+.pgnav .kind{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;background:#fbe7eb;color:var(--crimson);padding:3px 8px;border-radius:5px;text-transform:uppercase}
+.pgdots{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.pgdots button{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--paper);font:inherit;font-size:10px;font-weight:700;color:var(--soft);cursor:pointer}
+.pgdots button.on{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.fld{margin-bottom:11px}
+.fld label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);margin-bottom:4px}
+.fld input,.fld textarea{width:100%;font:inherit;font-size:13px;line-height:1.5;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fffefb;outline-color:var(--crimson);resize:vertical}
+.fld textarea{min-height:64px}
+.itemrow{display:flex;gap:6px;margin-bottom:6px}
+.itemrow input{flex:1}
+.itemrow button,.additem{border:1px solid var(--line);background:var(--paper);color:var(--soft);font:inherit;font-size:12px;font-weight:700;border-radius:8px;padding:0 11px;cursor:pointer}
+.additem{padding:7px 13px;margin-top:2px}
+.tplrow{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.tplrow .tl{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--grey)}
+.tplrow button{border:1px solid var(--line);background:var(--paper);color:var(--ink);font:inherit;font-size:12px;font-weight:700;padding:6px 13px;border-radius:999px;cursor:pointer}
+.tplrow button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.hint{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--grey);margin-top:8px;line-height:1.6}
+.edcol label.big{display:block;font-size:13px;font-weight:800;margin-bottom:7px}
 /* ---- LinkedIn-style post preview ---- */
 .li-post{max-width:555px;background:#fff;border:1px solid #d9d3d0;border-radius:10px;overflow:hidden;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .li-head{display:flex;gap:10px;padding:14px 16px 8px;align-items:flex-start}
@@ -208,6 +230,68 @@ let favs=new Set(ls('studioFavs',[]));
 let drafts=ls('studioDrafts',{});   // {topic: [{caption,deck,category,why,fmt,at}, ...]} — every generation is kept
 let chosenIdx=-1, quotaInfo=ls('quotaInfo',null);
 const esc=s=>String(s).replace(/</g,'&lt;');
+
+/* ---- carousel page editor: per-field boxes per slide type ----
+   Slide schemas mirror the renderer in dashboard/carousel.html. Templates restyle these
+   same 5 page types, so a deck can be swapped between templates without regenerating. */
+const DECK_SCHEMA={
+ cover:    [['kicker','Kicker','input'],['title','Headline','area'],['sub','Sub-line','area']],
+ section:  [['num','No.','input'],['kicker','Group label','input'],['cat','Heading','input'],['items','Lines','list'],['note','Closing note','input']],
+ stat:     [['label','Label','input'],['figure','Big figure','input'],['sub','Explainer','area']],
+ statement:[['text','Statement','area']],
+ cta:      [['title','Headline','area'],['sub','Sub-line','area']],
+};
+/* The deck stores display HTML. Shravan edits plain text: ==word== is the accent colour,
+   newlines are line breaks. Anything else in the field is passed through untouched. */
+const deHtml=s=>String(s??'').replace(/<span class="hl">(.*?)<\/span>/g,'==$1==').replace(/<br\s*\/?>/gi,'\n');
+const reHtml=s=>String(s??'').replace(/==(.+?)==/g,'<span class="hl">$1</span>').replace(/\n/g,'<br>');
+const TEMPLATES=[['classic','Classic']];  // real templates land here once Rushi sends the designs
+let pageIdx=0, deckTimer=null;
+const att=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const curTpl=()=>localStorage.getItem('studioTpl')||'classic';
+const deckSrc=()=>`carousel.html?post=DRAFT&embed=1&tpl=${encodeURIComponent(curTpl())}&v=${Date.now()}`;
+function setTpl(id){localStorage.setItem('studioTpl',id);
+ document.querySelectorAll('#tplrow button').forEach(b=>b.classList.toggle('on',b.dataset.t===id));
+ const f=document.getElementById('deckframe'); if(f)f.src=deckSrc();}
+/* one writer for deck edits: persist, keep the draft list in sync, then re-render the preview */
+function pushDeck(){
+ if(!chosen||!chosen.deck)return;
+ localStorage.setItem('studioDraftDeck',JSON.stringify(chosen.deck));
+ chosen.edited=true;
+ if(chosenIdx>=0&&drafts[topic]&&drafts[topic][chosenIdx]){drafts[topic][chosenIdx]=chosen;save('studioDrafts',drafts);}
+ clearTimeout(deckTimer);
+ deckTimer=setTimeout(()=>{const f=document.getElementById('deckframe');if(f)f.src=deckSrc();},400);
+}
+function goPage(i){pageIdx=i;renderPages();}
+function setFld(k,v){chosen.deck[pageIdx][k]=reHtml(v);pushDeck();}
+function setItem(j,v){chosen.deck[pageIdx].items[j]=reHtml(v);pushDeck();}
+function delItem(j){chosen.deck[pageIdx].items.splice(j,1);pushDeck();renderPages();}
+function addItem(){const s=chosen.deck[pageIdx];(s.items=s.items||[]).push('');pushDeck();renderPages();}
+function renderPages(){
+ const el=document.getElementById('pgs'); if(!el||!chosen||!chosen.deck)return;
+ const d=chosen.deck,n=d.length;
+ pageIdx=Math.max(0,Math.min(pageIdx,n-1));
+ const s=d[pageIdx],schema=DECK_SCHEMA[s.type]||[['text','Text','area']];
+ el.innerHTML=`
+  <div class="pgnav">
+   <button class="pill" onclick="goPage(${pageIdx-1})" ${pageIdx===0?'disabled':''}>←</button>
+   <span class="now">PAGE ${pageIdx+1} / ${n}</span><span class="kind">${esc(s.type)}</span>
+   <button class="pill" onclick="goPage(${pageIdx+1})" ${pageIdx===n-1?'disabled':''}>→</button>
+   <div class="pgdots">${d.map((_,i)=>`<button class="${i===pageIdx?'on':''}" onclick="goPage(${i})">${i+1}</button>`).join('')}</div>
+  </div>
+  ${schema.map(([k,lab,kind])=>{
+   if(kind==='list'){
+    const items=Array.isArray(s[k])?s[k]:[];
+    return `<div class="fld"><label>${esc(lab)}</label>
+     ${items.map((it,j)=>`<div class="itemrow"><input value="${att(deHtml(it))}" oninput="setItem(${j},this.value)"/><button onclick="delItem(${j})" title="remove this line">×</button></div>`).join('')}
+     <button class="additem" onclick="addItem()">+ add line</button></div>`;
+   }
+   return `<div class="fld"><label>${esc(lab)}</label>${kind==='area'
+    ?`<textarea oninput="setFld('${att(k)}',this.value)">${att(deHtml(s[k]))}</textarea>`
+    :`<input value="${att(deHtml(s[k]))}" oninput="setFld('${att(k)}',this.value)"/>`}</div>`;
+  }).join('')}
+  <div class="hint">Wrap a word in ==equals== to paint it the accent colour. Enter starts a new line. Every edit saves and re-renders the preview.</div>`;
+}
 
 /* ---- mechanical audit (content-engine harvest 2026-08-05): deterministic, instant, judgement-free ---- */
 const AUDIT_CHECKS=[
@@ -424,7 +508,7 @@ async function generate(){
   }catch(e){ renderTopic(`⚠ ${e.message}`); }
 }
 function choose(i){
-  chosen=drafts[topic][i]; chosenIdx=i;
+  chosen=drafts[topic][i]; chosenIdx=i; pageIdx=0;
   if(chosen.deck) localStorage.setItem('studioDraftDeck',JSON.stringify(chosen.deck));
   renderApprove();
 }
@@ -453,15 +537,29 @@ function renderApprove(){
       </div>
      </div>
      <div class="li-cap" id="licap"></div>
-     ${chosen.deck?`<div class="li-doc"><iframe src="carousel.html?post=DRAFT&embed=1"></iframe>
+     ${chosen.deck?`<div class="li-doc"><iframe id="deckframe" src="${deckSrc()}"></iframe>
       <div class="li-docbar"><span>Document · ${chosen.deck.length} pages</span><span>▸ swipe</span></div></div>`:''}
      <div class="li-actions"><span>👍 Like</span><span>💬 Comment</span><span>🔁 Repost</span><span>➤ Send</span></div>
     </div>
     ${chosen.deck?`<div class="note">PDF for LinkedIn: open <a href="carousel.html?post=DRAFT" target="_blank">full view</a> → "Save as PDF". To change slide text, edit the caption here and ⚡ regenerate for a new deck.</div>`:''}
    </div>
    <div id="edwrap" class="hidden">
-    <textarea class="edit" id="editbox" spellcheck="true">${esc(chosen.caption)}</textarea>
-    <div class="editnote">✎ EDIT FREELY — saves automatically; flip back to Preview to see it as LinkedIn will show it.</div>
+    <div class="${chosen.deck?'two':''}">
+     <div class="edcol">
+      <label class="big">Caption</label>
+      <textarea class="edit" id="editbox" spellcheck="true">${esc(chosen.caption)}</textarea>
+      <div class="editnote">✎ EDIT FREELY — saves automatically; flip back to Preview to see it as LinkedIn will show it.</div>
+     </div>
+     ${chosen.deck?`<div class="edcol">
+      <label class="big">Carousel pages</label>
+      <div class="pgwrap">
+       <div class="tplrow" id="tplrow"><span class="tl">Template</span>
+        ${TEMPLATES.map(([id,nm])=>`<button data-t="${att(id)}" class="${curTpl()===id?'on':''}" onclick="setTpl('${att(id)}')">${esc(nm)}</button>`).join('')}
+       </div>
+       <div id="pgs"></div>
+      </div>
+     </div>`:''}
+    </div>
    </div>
    <div id="liveaudit">${auditHTML(chosen.caption)}</div>
    <div class="rowb">
@@ -474,6 +572,7 @@ function renderApprove(){
     if(chosenIdx>=0&&drafts[topic]&&drafts[topic][chosenIdx]){drafts[topic][chosenIdx]=chosen; save('studioDrafts',drafts);}
     const la=document.getElementById('liveaudit'); if(la)la.innerHTML=auditHTML(box.value);
   });
+  renderPages();
   renderCap(false);
 }
 /* LinkedIn-style caption with the real "…see more" fold */
